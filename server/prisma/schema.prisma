@@ -1,0 +1,413 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  STAFF
+}
+
+enum PriceType {
+  FIXED
+  STARTING_FROM
+  REQUEST_PRICE
+}
+
+enum StockStatus {
+  IN_STOCK
+  LOW_STOCK
+  OUT_OF_STOCK
+  MADE_TO_ORDER
+  CONTACT_FOR_AVAILABILITY
+}
+
+enum RequestStatus {
+  NEW
+  CONTACTED
+  IN_REVIEW
+  QUOTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+}
+
+enum InquiryType {
+  GENERAL
+  PRODUCT
+  PRICING
+  DELIVERY
+  OTHER
+}
+
+enum PreferredContactMethod {
+  PHONE
+  WHATSAPP
+  EMAIL
+  ANY
+}
+
+enum InstitutionType {
+  SCHOOL
+  UNIVERSITY
+  FOOTBALL_CLUB
+  COMPANY
+  NGO
+  ASSOCIATION
+  CHURCH
+  TOURNAMENT_ORGANISER
+  GOVERNMENT
+  COMMUNITY
+  OTHER
+}
+
+enum SiteSettingType {
+  STRING
+  JSON
+  BOOLEAN
+  NUMBER
+}
+
+model User {
+  id           String    @id @default(cuid())
+  fullName     String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(ADMIN)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  auditLogs      AuditLog[]
+  refreshTokens  RefreshToken[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model Category {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?
+  imageUrl      String?
+  imagePublicId String?
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  products     Product[]
+  quoteRequests QuoteRequest[]
+
+  @@index([slug])
+  @@index([isActive, sortOrder])
+  @@map("categories")
+}
+
+model Product {
+  id                   String      @id @default(cuid())
+  name                 String
+  slug                 String      @unique
+  shortDescription     String?
+  description          String?     @db.Text
+  categoryId           String
+  sku                  String?     @unique
+  price                Decimal?    @db.Decimal(12, 2)
+  priceType            PriceType   @default(REQUEST_PRICE)
+  currency             String      @default("UGX")
+  isPriceVisible       Boolean     @default(false)
+  isFeatured           Boolean     @default(false)
+  isActive             Boolean     @default(true)
+  stockStatus          StockStatus @default(CONTACT_FOR_AVAILABILITY)
+  brandingAvailable    Boolean     @default(true)
+  minimumOrderQuantity Int?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  category      Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  images        ProductImage[]
+  variants      ProductVariant[]
+  quoteRequests QuoteRequest[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([stockStatus])
+  @@index([createdAt])
+  @@map("products")
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  secureUrl String
+  publicId  String
+  altText   String?
+  width     Int?
+  height    Int?
+  sortOrder Int      @default(0)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([productId, isPrimary])
+  @@map("product_images")
+}
+
+model ProductVariant {
+  id              String      @id @default(cuid())
+  productId       String
+  size            String?
+  colour          String?
+  version         String?
+  sku             String?
+  priceAdjustment Decimal?    @db.Decimal(12, 2)
+  stockStatus     StockStatus @default(CONTACT_FOR_AVAILABILITY)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+model Inquiry {
+  id                     String                 @id @default(cuid())
+  referenceNumber        String                 @unique
+  type                   InquiryType            @default(GENERAL)
+  fullName               String
+  phone                  String
+  email                  String?
+  subject                String?
+  message                String                 @db.Text
+  preferredContactMethod PreferredContactMethod @default(ANY)
+  status                 RequestStatus          @default(NEW)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  attachments RequestAttachment[]
+
+  @@index([referenceNumber])
+  @@index([status])
+  @@index([createdAt])
+  @@map("inquiries")
+}
+
+model QuoteRequest {
+  id                     String                 @id @default(cuid())
+  referenceNumber        String                 @unique
+  customerName           String
+  organisationName       String?
+  phone                  String
+  email                  String?
+  location               String?
+  productId              String?
+  categoryId             String?
+  quantity               Int?
+  brandingRequired       Boolean                @default(false)
+  requiredDate           DateTime?
+  budgetRange            String?
+  notes                  String?                @db.Text
+  preferredContactMethod PreferredContactMethod @default(ANY)
+  status                 RequestStatus          @default(NEW)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  product     Product?            @relation(fields: [productId], references: [id], onDelete: SetNull)
+  category    Category?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  attachments RequestAttachment[]
+
+  @@index([referenceNumber])
+  @@index([status])
+  @@index([createdAt])
+  @@index([productId])
+  @@map("quote_requests")
+}
+
+model BrandingRequest {
+  id                     String                 @id @default(cuid())
+  referenceNumber        String                 @unique
+  customerName           String
+  organisationName       String?
+  phone                  String
+  email                  String?
+  serviceType            String
+  productType            String?
+  quantity               Int?
+  preferredColour        String?
+  sizes                  String?
+  requiredDate           DateTime?
+  description            String                 @db.Text
+  preferredContactMethod PreferredContactMethod @default(ANY)
+  status                 RequestStatus          @default(NEW)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  attachments RequestAttachment[]
+
+  @@index([referenceNumber])
+  @@index([status])
+  @@index([createdAt])
+  @@map("branding_requests")
+}
+
+model InstitutionalRequest {
+  id                     String                 @id @default(cuid())
+  referenceNumber        String                 @unique
+  contactPerson          String
+  institutionName        String
+  institutionType        InstitutionType
+  phone                  String
+  email                  String?
+  location               String?
+  productsRequired       String                 @db.Text
+  estimatedQuantity      String?
+  brandingRequired       Boolean                @default(false)
+  requiredDate           DateTime?
+  budgetRange            String?
+  additionalNotes        String?                @db.Text
+  preferredContactMethod PreferredContactMethod @default(ANY)
+  status                 RequestStatus          @default(NEW)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  attachments RequestAttachment[]
+
+  @@index([referenceNumber])
+  @@index([status])
+  @@index([createdAt])
+  @@map("institutional_requests")
+}
+
+model RequestAttachment {
+  id                     String   @id @default(cuid())
+  inquiryId              String?
+  quoteRequestId         String?
+  brandingRequestId      String?
+  institutionalRequestId String?
+  secureUrl              String
+  publicId               String
+  originalName           String?
+  mimeType               String?
+  fileSize               Int?
+  createdAt              DateTime @default(now())
+
+  inquiry              Inquiry?              @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  quoteRequest         QuoteRequest?         @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  brandingRequest      BrandingRequest?      @relation(fields: [brandingRequestId], references: [id], onDelete: Cascade)
+  institutionalRequest InstitutionalRequest? @relation(fields: [institutionalRequestId], references: [id], onDelete: Cascade)
+
+  @@index([inquiryId])
+  @@index([quoteRequestId])
+  @@index([brandingRequestId])
+  @@index([institutionalRequestId])
+  @@map("request_attachments")
+}
+
+model Testimonial {
+  id            String   @id @default(cuid())
+  customerName  String
+  organisation  String?
+  content       String   @db.Text
+  rating        Int      @default(5)
+  imageUrl      String?
+  imagePublicId String?
+  isApproved    Boolean  @default(false)
+  isFeatured    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isApproved, isFeatured])
+  @@map("testimonials")
+}
+
+model Banner {
+  id            String   @id @default(cuid())
+  title         String
+  subtitle      String?
+  imageUrl      String
+  imagePublicId String?
+  buttonText    String?
+  buttonUrl     String?
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("banners")
+}
+
+model SiteSetting {
+  id        String          @id @default(cuid())
+  key       String          @unique
+  value     String          @db.Text
+  type      SiteSettingType @default(STRING)
+  group     String          @default("general")
+  isPublic  Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([key])
+  @@index([group, isPublic])
+  @@map("site_settings")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model ReferenceCounter {
+  id        String   @id @default(cuid())
+  prefix    String
+  year      Int
+  counter   Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([prefix, year])
+  @@map("reference_counters")
+}
