@@ -26,6 +26,7 @@ export default {
       fontFamily: {
         heading: ['"Bebas Neue"', 'sans-serif'],
         body: ['Manrope', 'sans-serif'],
+        'camera-logo': ['Pacifico', 'cursive'],
       },
       maxWidth: {
         content: '1320px',
