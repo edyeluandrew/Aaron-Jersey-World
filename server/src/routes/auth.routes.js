@@ -38,7 +38,7 @@ const passwordLimiter = rateLimit({
 router.post('/login', loginLimiter, validate(loginSchema), loginHandler);
 router.post('/refresh', refreshHandler);
 router.post('/logout', optionalAuthenticate, logoutHandler);
-router.get('/me', authenticate, meHandler);
+router.get('/me', optionalAuthenticate, meHandler);
 router.patch('/change-password', passwordLimiter, authenticate, validate(changePasswordSchema), changePasswordHandler);
 
 export default router;

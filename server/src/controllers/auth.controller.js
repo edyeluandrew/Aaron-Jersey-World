@@ -99,6 +99,13 @@ export async function logoutHandler(req, res, next) {
 
 export async function meHandler(req, res, next) {
   try {
+    if (!req.user) {
+      return sendSuccess(res, {
+        message: 'No active session',
+        data: { user: null },
+      });
+    }
+
     const user = await getCurrentUser(req.user.id);
 
     sendSuccess(res, {

@@ -12,7 +12,7 @@ export async function logout() {
 
 export async function fetchCurrentUser() {
   const { data } = await apiClient.get('/auth/me');
-  return data.data.user;
+  return data.data.user ?? null;
 }
 
 export async function refreshSession() {
