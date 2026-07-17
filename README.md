@@ -162,6 +162,44 @@ npm run dev:client   # http://localhost:5173
 
 > Or use the included `render.yaml` blueprint: **New → Blueprint** → select this repo.
 
+### CI + Render deploy hook (GitHub Actions)
+
+This repo includes:
+
+| Workflow | File | What it does |
+|----------|------|----------------|
+| **CI** | `.github/workflows/ci.yml` | On every push/PR to `main`: validates Prisma, checks server syntax, builds the Vite client. |
+| **Deploy Render API** | `.github/workflows/render-deploy.yml` | After CI passes on `main`, POSTs your Render deploy hook (if configured). |
+
+#### 1. Create the Render deploy hook
+
+1. [Render Dashboard](https://dashboard.render.com) → **aaron-jersey-world-api** → **Settings**
+2. Scroll to **Deploy Hook** → **Create Deploy Hook**
+3. Copy the URL (looks like `https://api.render.com/deploy/srv-xxxxx?key=yyyy`)
+
+#### 2. Add the hook to GitHub Secrets
+
+1. GitHub repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+2. Name: `RENDER_DEPLOY_HOOK_URL`
+3. Value: paste the deploy hook URL from Render
+
+#### 3. (Recommended) Avoid double deploys
+
+Render auto-deploys on every push by default. If you use the GitHub deploy hook, pick **one** approach:
+
+- **Option A — CI-gated deploys (recommended):** In Render → **Settings** → turn **Auto-Deploy** off. Deploys only run when CI passes and the hook fires.
+- **Option B — Keep auto-deploy:** Leave Render auto-deploy on. The deploy hook is optional (manual redeploy via **Actions → Deploy Render API → Run workflow**).
+
+#### 4. Manual redeploy from GitHub
+
+**Actions** → **Deploy Render API** → **Run workflow** → triggers the hook without a new commit.
+
+#### 5. Verify CI locally
+
+```bash
+npm run ci
+```
+
 ### Frontend → Vercel
 
 1. [Vercel Dashboard](https://vercel.com) → **Add New Project** → import `edyeluandrew/Aaron-Jersey-World`.
