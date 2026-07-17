@@ -155,7 +155,7 @@ npm run dev:client   # http://localhost:5173
    - **Start command:** `npm start`
    - **Health check path:** `/api/v1/health`
 4. Add environment variables from `server/.env.example` (use production secrets).
-5. Set **`CLIENT_URL`** to your Vercel frontend URL (e.g. `https://aaron-jersey-world.vercel.app`).
+5. Set **`CLIENT_URL`** to your Vercel frontend URL (no trailing slash), e.g. `https://aaron-jersey-world-client.vercel.app`
 6. After first deploy, run seed once via Render shell: `npm run db:seed`
 
 **Your API base URL:** `https://<service-name>.onrender.com/api/v1`

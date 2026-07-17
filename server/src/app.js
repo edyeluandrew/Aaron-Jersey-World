@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import { env, isProduction } from './config/env.js';
+import { isAllowedClientOrigin, parseClientOrigins } from './config/cors.js';
 import { apiRouter, API_PREFIX } from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
@@ -18,11 +19,27 @@ app.use(
   }),
 );
 
-const devOrigins = ['http://localhost:5173', 'http://localhost:5174', env.CLIENT_URL];
+const allowedOrigins = parseClientOrigins();
+const localDevOrigins = ['http://localhost:5173', 'http://localhost:5174'];
 
 app.use(
   cors({
-    origin: isProduction ? env.CLIENT_URL : devOrigins,
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const permitted = isProduction
+        ? isAllowedClientOrigin(origin, allowedOrigins)
+        : isAllowedClientOrigin(origin, [...new Set([...allowedOrigins, ...localDevOrigins])]);
+
+      if (permitted) {
+        return callback(null, true);
+      }
+
+      console.warn(`[CORS] Blocked origin: ${origin}`);
+      return callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    },
     credentials: true,
   }),
 );

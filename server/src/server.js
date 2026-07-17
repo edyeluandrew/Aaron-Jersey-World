@@ -1,5 +1,6 @@
 import app from './app.js';
 import { env } from './config/env.js';
+import { parseClientOrigins } from './config/cors.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
 
 const PORT = env.PORT;
@@ -11,6 +12,7 @@ async function startServer() {
     const server = app.listen(PORT, () => {
       console.log(`Aaron Jersey World API running on port ${PORT}`);
       console.log(`Environment: ${env.NODE_ENV}`);
+      console.log(`Allowed client origins: ${parseClientOrigins().join(', ')}`);
       console.log(`Health check: http://localhost:${PORT}/api/v1/health`);
     });
 

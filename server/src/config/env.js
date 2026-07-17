@@ -8,7 +8,22 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   DATABASE_URL: z.string().min(1).optional(),
   DIRECT_URL: z.string().optional(),
-  CLIENT_URL: z.string().url().default('http://localhost:5173'),
+  CLIENT_URL: z
+    .string()
+    .min(1)
+    .default('http://localhost:5173')
+    .refine(
+      (value) =>
+        value.split(',').every((part) => {
+          try {
+            new URL(part.trim());
+            return true;
+          } catch {
+            return false;
+          }
+        }),
+      { message: 'CLIENT_URL must be one or more valid URLs (comma-separated)' },
+    ),
   JWT_ACCESS_SECRET: z.string().min(32).optional(),
   JWT_REFRESH_SECRET: z.string().min(32).optional(),
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
