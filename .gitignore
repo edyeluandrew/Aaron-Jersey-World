@@ -3,9 +3,8 @@ node_modules/
 .pnp
 .pnp.js
 
-# Build outputs
-dist/
-build/
+# Build outputs — do not gitignore client/dist (Vercel cannot deploy ignored output dirs)
+server/dist/
 .vite/
 
 # Environment variables

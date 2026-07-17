@@ -166,10 +166,9 @@ npm run dev:client   # http://localhost:5173
 
 1. [Vercel Dashboard](https://vercel.com) → **Add New Project** → import `edyeluandrew/Aaron-Jersey-World`.
 2. Settings:
-   - **Root directory:** `client`
-   - **Framework preset:** Vite
-   - **Build command:** `npm run build`
-   - **Output directory:** `dist`
+   - **Root directory:** `client` (uses `client/vercel.json` — leave Build/Output commands **empty** in the dashboard so Vercel reads the config file)
+   - **Framework preset:** Other (or Vite — clear any manual Output Directory override)
+   - Do **not** set Output Directory to a custom value in the dashboard; it must stay `dist` via `client/vercel.json`
 3. Environment variables:
 
    | Variable | Value |
