@@ -11,77 +11,42 @@ const SAMPLE_IMAGE =
 
 const categories = [
   {
-    name: 'Club Jerseys',
-    slug: 'club-jerseys',
-    description: 'Current football club jerseys and team kits. Sample development catalogue data.',
+    name: 'Jerseys',
+    slug: 'jerseys',
+    description: 'Club jerseys, vintage shirts, fan tops and team apparel.',
     sortOrder: 1,
-  },
-  {
-    name: 'Vintage Jerseys',
-    slug: 'vintage-jerseys',
-    description: 'Classic and retro football jerseys. Sample development catalogue data.',
-    sortOrder: 2,
-  },
-  {
-    name: 'Custom Team Kits',
-    slug: 'custom-team-kits',
-    description: 'Fully customised team kits for clubs and organisations. Sample data.',
-    sortOrder: 3,
-  },
-  {
-    name: 'Football Boots',
-    slug: 'football-boots',
-    description: 'Football boots for training and match day. Sample development data.',
-    sortOrder: 4,
-  },
-  {
-    name: 'Goalkeeper Gloves',
-    slug: 'goalkeeper-gloves',
-    description: 'Goalkeeper gloves in various sizes. Sample development data.',
-    sortOrder: 5,
-  },
-  {
-    name: 'Balls',
-    slug: 'balls',
-    description: 'Match and training footballs. Sample development catalogue data.',
-    sortOrder: 6,
-  },
-  {
-    name: 'Trophies and Medals',
-    slug: 'trophies-and-medals',
-    description: 'Trophies, gold, silver and bronze medals for events. Sample data.',
-    sortOrder: 7,
   },
   {
     name: 'Training Equipment',
     slug: 'training-equipment',
-    description: 'Cones, bibs, whistles and training accessories. Sample data.',
-    sortOrder: 8,
+    description: 'Balls, boots, cones, bibs, nets, gloves and all training gear.',
+    sortOrder: 2,
   },
   {
-    name: 'Branded T-Shirts',
-    slug: 'branded-t-shirts',
-    description: 'Custom branded T-shirts for teams and events. Sample data.',
-    sortOrder: 9,
+    name: 'Custom Kits',
+    slug: 'custom-kits',
+    description: 'Fully custom team kits, tracksuits and branded apparel packages.',
+    sortOrder: 3,
   },
   {
-    name: 'Goal Nets',
-    slug: 'goal-nets',
-    description: 'Goal nets for pitches and training grounds. Sample data.',
-    sortOrder: 10,
+    name: 'Trophies and Medals',
+    slug: 'trophies-and-medals',
+    description: 'Trophies, medals and awards for schools, clubs and tournaments.',
+    sortOrder: 4,
   },
-  {
-    name: 'Pool Tables',
-    slug: 'pool-tables',
-    description: 'Pool tables and recreational sports equipment. Sample data.',
-    sortOrder: 11,
-  },
-  {
-    name: 'Sports Accessories',
-    slug: 'sports-accessories',
-    description: 'Caps, socks, vuvuzelas and other accessories. Sample data.',
-    sortOrder: 12,
-  },
+];
+
+const legacyCategories = [
+  { name: 'Club Jerseys', slug: 'club-jerseys', sortOrder: 101 },
+  { name: 'Vintage Jerseys', slug: 'vintage-jerseys', sortOrder: 102 },
+  { name: 'Custom Team Kits', slug: 'custom-team-kits', sortOrder: 103 },
+  { name: 'Football Boots', slug: 'football-boots', sortOrder: 104 },
+  { name: 'Goalkeeper Gloves', slug: 'goalkeeper-gloves', sortOrder: 105 },
+  { name: 'Balls', slug: 'balls', sortOrder: 106 },
+  { name: 'Branded T-Shirts', slug: 'branded-t-shirts', sortOrder: 107 },
+  { name: 'Goal Nets', slug: 'goal-nets', sortOrder: 108 },
+  { name: 'Pool Tables', slug: 'pool-tables', sortOrder: 109 },
+  { name: 'Sports Accessories', slug: 'sports-accessories', sortOrder: 110 },
 ];
 
 const siteSettings = [
@@ -192,7 +157,7 @@ const products = [
   {
     name: '[Sample] Premier Club Home Jersey 2026',
     slug: 'sample-premier-club-home-jersey-2026',
-    categorySlug: 'club-jerseys',
+    categorySlug: 'jerseys',
     shortDescription: 'Sample development product — not confirmed current stock.',
     description:
       'This is sample catalogue data for development purposes. A replica-style home jersey suitable for local clubs and tournaments. Custom names, numbers and sponsor logos available on request.',
@@ -213,7 +178,7 @@ const products = [
   {
     name: '[Sample] Classic Vintage Football Shirt',
     slug: 'sample-classic-vintage-football-shirt',
-    categorySlug: 'vintage-jerseys',
+    categorySlug: 'jerseys',
     shortDescription: 'Sample vintage-style jersey for catalogue demonstration.',
     description:
       'Sample development listing. Retro-inspired football shirt for collectors and fan groups. Availability and exact designs confirmed on enquiry.',
@@ -227,7 +192,7 @@ const products = [
   {
     name: '[Sample] Full Custom Team Kit Package',
     slug: 'sample-full-custom-team-kit-package',
-    categorySlug: 'custom-team-kits',
+    categorySlug: 'custom-kits',
     shortDescription: 'Jersey, shorts and socks — sample bulk kit listing.',
     description:
       'Sample institutional package listing. Includes home and away options, name/number printing and team crest branding. Minimum quantities apply.',
@@ -245,7 +210,7 @@ const products = [
   {
     name: '[Sample] Pro Strike Football Boots',
     slug: 'sample-pro-strike-football-boots',
-    categorySlug: 'football-boots',
+    categorySlug: 'training-equipment',
     shortDescription: 'Sample boots listing for development catalogue.',
     description: 'Sample product data. Firm-ground football boots available in multiple sizes. Price confirmed on request.',
     sku: 'SAMPLE-BOT-001',
@@ -262,7 +227,7 @@ const products = [
   {
     name: '[Sample] Match Goalkeeper Gloves',
     slug: 'sample-match-goalkeeper-gloves',
-    categorySlug: 'goalkeeper-gloves',
+    categorySlug: 'training-equipment',
     shortDescription: 'Sample goalkeeper gloves — development data only.',
     description: 'Sample listing for padded match gloves with wrist strap. Sizes subject to availability.',
     sku: 'SAMPLE-GLV-001',
@@ -279,7 +244,7 @@ const products = [
   {
     name: '[Sample] FIFA Quality Match Football',
     slug: 'sample-fifa-quality-match-football',
-    categorySlug: 'balls',
+    categorySlug: 'training-equipment',
     shortDescription: 'Sample match ball for catalogue display.',
     description: 'Sample development product. Size 5 match football suitable for leagues and school competitions.',
     sku: 'SAMPLE-BAL-001',
@@ -293,7 +258,7 @@ const products = [
   {
     name: '[Sample] Training Football Size 4',
     slug: 'sample-training-football-size-4',
-    categorySlug: 'balls',
+    categorySlug: 'training-equipment',
     shortDescription: 'Sample training ball listing.',
     description: 'Sample catalogue entry for youth and academy training sessions.',
     sku: 'SAMPLE-BAL-002',
@@ -361,7 +326,7 @@ const products = [
   {
     name: '[Sample] Branded Team T-Shirt',
     slug: 'sample-branded-team-t-shirt',
-    categorySlug: 'branded-t-shirts',
+    categorySlug: 'jerseys',
     shortDescription: 'Sample custom T-shirt for teams and events.',
     description:
       'Sample listing. Corporate, school, birthday and association branding available. Upload your logo when requesting a quote.',
@@ -393,7 +358,7 @@ const products = [
   {
     name: '[Sample] Heavy Duty Goal Net',
     slug: 'sample-heavy-duty-goal-net',
-    categorySlug: 'goal-nets',
+    categorySlug: 'training-equipment',
     shortDescription: 'Sample goal net for full-size posts.',
     description: 'Sample development product. Suitable for schools, clubs and community pitches.',
     sku: 'SAMPLE-NET-001',
@@ -406,7 +371,7 @@ const products = [
   {
     name: '[Sample] Club Tracksuit Set',
     slug: 'sample-club-tracksuit-set',
-    categorySlug: 'custom-team-kits',
+    categorySlug: 'custom-kits',
     shortDescription: 'Sample tracksuit for teams and academies.',
     description: 'Sample listing with custom crest and sponsor placement options.',
     sku: 'SAMPLE-TRK-001',
@@ -422,7 +387,7 @@ const products = [
   {
     name: '[Sample] Branded Sports Cap',
     slug: 'sample-branded-sports-cap',
-    categorySlug: 'sports-accessories',
+    categorySlug: 'training-equipment',
     shortDescription: 'Sample embroidered cap listing.',
     description: 'Sample accessory for teams, fan groups and corporate events.',
     sku: 'SAMPLE-CAP-001',
@@ -436,7 +401,7 @@ const products = [
   {
     name: '[Sample] Match Whistle and Card Set',
     slug: 'sample-match-whistle-card-set',
-    categorySlug: 'sports-accessories',
+    categorySlug: 'training-equipment',
     shortDescription: 'Sample referee accessory bundle.',
     description: 'Sample catalogue entry for match officials and tournament organisers.',
     sku: 'SAMPLE-ACC-001',
@@ -449,7 +414,7 @@ const products = [
   {
     name: '[Sample] Pool Table 7ft',
     slug: 'sample-pool-table-7ft',
-    categorySlug: 'pool-tables',
+    categorySlug: 'trophies-and-medals',
     shortDescription: 'Sample recreational pool table listing.',
     description:
       'Sample development listing for institutions and recreation spaces. Delivery and setup quoted separately.',
@@ -521,8 +486,55 @@ async function seedCategories() {
     categoryMap[category.slug] = record.id;
   }
 
-  console.log(`[Seed] ${categories.length} categories upserted`);
+  for (const category of legacyCategories) {
+    await prisma.category.upsert({
+      where: { slug: category.slug },
+      update: { isActive: false },
+      create: {
+        ...category,
+        description: 'Legacy category — use the main catalogue categories instead.',
+        isActive: false,
+        imageUrl: SAMPLE_IMAGE,
+        imagePublicId: 'demo/sample',
+      },
+    });
+  }
+
+  console.log(`[Seed] ${categories.length} main categories upserted (${legacyCategories.length} legacy hidden)`);
+  await migrateProductsToMainCategories(categoryMap);
   return categoryMap;
+}
+
+async function migrateProductsToMainCategories(categoryMap) {
+  const remap = {
+    'club-jerseys': 'jerseys',
+    'vintage-jerseys': 'jerseys',
+    'branded-t-shirts': 'jerseys',
+    'football-boots': 'training-equipment',
+    'goalkeeper-gloves': 'training-equipment',
+    balls: 'training-equipment',
+    'goal-nets': 'training-equipment',
+    'sports-accessories': 'training-equipment',
+    'custom-team-kits': 'custom-kits',
+    'pool-tables': 'trophies-and-medals',
+  };
+
+  for (const [legacySlug, mainSlug] of Object.entries(remap)) {
+    const targetCategoryId = categoryMap[mainSlug];
+    if (!targetCategoryId) continue;
+
+    const legacyCategory = await prisma.category.findUnique({ where: { slug: legacySlug } });
+    if (!legacyCategory) continue;
+
+    const result = await prisma.product.updateMany({
+      where: { categoryId: legacyCategory.id },
+      data: { categoryId: targetCategoryId },
+    });
+
+    if (result.count > 0) {
+      console.log(`[Seed] Moved ${result.count} products from ${legacySlug} → ${mainSlug}`);
+    }
+  }
 }
 
 async function seedProducts(categoryMap) {

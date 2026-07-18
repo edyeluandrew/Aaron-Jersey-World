@@ -35,6 +35,9 @@ export const quoteSchema = z.object({
   productSlug: z.string().optional(),
   categorySlug: z.string().optional(),
   quantity: z.coerce.number().int().positive().optional().or(z.literal('')),
+  selectedSize: z.string().max(40).optional(),
+  selectedColour: z.string().max(80).optional(),
+  sizeQuantities: z.string().max(2000).optional(),
   brandingRequired: z.boolean().default(false),
   requiredDate: z.string().optional(),
   budgetRange: z.string().optional(),
@@ -99,6 +102,7 @@ function cleanPayload(values) {
 
   if (payload.email === '') delete payload.email;
   if (payload.quantity === '') delete payload.quantity;
+  if (payload.sizeQuantities === '') delete payload.sizeQuantities;
   if (!payload.attachments?.length) delete payload.attachments;
 
   return payload;

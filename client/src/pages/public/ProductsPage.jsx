@@ -8,9 +8,11 @@ import CategoryCard from '@/components/home/CategoryCard';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import ErrorState from '@/components/common/ErrorState';
 import { useCategories } from '@/hooks/useCatalogue';
+import { filterMainCategories } from '@/constants/catalogue';
 
 export default function ProductsPage() {
   const { data: categories = [], isLoading, isError, refetch } = useCategories();
+  const mainCategories = filterMainCategories(categories);
 
   return (
     <>
@@ -31,11 +33,11 @@ export default function ProductsPage() {
           <LoadingSpinner label="Loading categories..." />
         ) : isError ? (
           <ErrorState onRetry={refetch} />
-        ) : categories.length === 0 ? (
+        ) : mainCategories.length === 0 ? (
           <p className="text-text-muted">No categories available yet.</p>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {categories.map((category) => (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+            {mainCategories.map((category) => (
               <CategoryCard key={category.id} category={category} />
             ))}
           </div>

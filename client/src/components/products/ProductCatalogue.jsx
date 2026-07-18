@@ -6,6 +6,7 @@ import ProductFilters, { buildFilterOptions } from '@/components/products/Produc
 import ProductGrid from '@/components/products/ProductGrid';
 import { useCategories, useProductFilters, useProducts } from '@/hooks/useCatalogue';
 import { useCatalogueParams } from '@/hooks/useCatalogueParams';
+import { filterMainCategories } from '@/constants/catalogue';
 
 export default function ProductCatalogue({
   title = 'Products',
@@ -26,7 +27,7 @@ export default function ProductCatalogue({
   const { data: filterMeta } = useProductFilters();
   const { data, isLoading, isError, refetch } = useProducts(params);
 
-  const filterOptions = buildFilterOptions(categories, filterMeta);
+  const filterOptions = buildFilterOptions(filterMainCategories(categories), filterMeta);
 
   const handleChange = (updates) => {
     if (lockCategory && 'category' in updates) {

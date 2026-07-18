@@ -10,6 +10,7 @@ import ProductGrid from '@/components/products/ProductGrid';
 import { useCategories, useFeaturedProducts } from '@/hooks/useCatalogue';
 import { useHeroBanners } from '@/hooks/useBanners';
 import { APP_DESCRIPTION } from '@/constants';
+import { filterMainCategories } from '@/constants/catalogue';
 
 export default function HomePage() {
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
@@ -21,7 +22,7 @@ export default function HomePage() {
   } = useFeaturedProducts(8);
 
   const { data: banners = [], isLoading: bannersLoading } = useHeroBanners();
-  const featuredCategories = categories.slice(0, 8);
+  const featuredCategories = filterMainCategories(categories);
 
   return (
     <>

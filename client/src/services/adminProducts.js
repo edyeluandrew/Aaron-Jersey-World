@@ -52,3 +52,18 @@ export async function uploadAdminProductImage(productId, file, meta = {}) {
   });
   return data.data;
 }
+
+export async function addAdminProductVariant(productId, payload) {
+  const { data } = await apiClient.post(`/admin/products/${productId}/variants`, payload);
+  return data.data;
+}
+
+export async function updateAdminProductVariant(productId, variantId, payload) {
+  const { data } = await apiClient.patch(`/admin/products/${productId}/variants/${variantId}`, payload);
+  return data.data;
+}
+
+export async function deleteAdminProductVariant(productId, variantId) {
+  const { data } = await apiClient.delete(`/admin/products/${productId}/variants/${variantId}`);
+  return data;
+}

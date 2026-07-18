@@ -233,6 +233,9 @@ model QuoteRequest {
   productId              String?
   categoryId             String?
   quantity               Int?
+  selectedSize           String?
+  selectedColour         String?
+  sizeQuantities         String?                @db.Text
   brandingRequired       Boolean                @default(false)
   requiredDate           DateTime?
   budgetRange            String?

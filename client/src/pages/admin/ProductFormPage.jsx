@@ -8,6 +8,7 @@ import Button from '@/components/common/Button';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import ErrorState from '@/components/common/ErrorState';
 import ProductImagesManager from '@/components/admin/ProductImagesManager';
+import ProductVariantsManager from '@/components/admin/ProductVariantsManager';
 import { FormField } from '@/components/forms/FormField';
 import { inputClassName, selectClassName, textareaClassName } from '@/constants/forms';
 import { ADMIN_QUERY_KEYS } from '@/constants/adminNavigation';
@@ -234,7 +235,10 @@ export default function ProductFormPage() {
         </form>
 
         {isEdit ? (
-          <ProductImagesManager productId={id} images={product?.images || []} />
+          <>
+            <ProductImagesManager productId={id} images={product?.images || []} />
+            <ProductVariantsManager productId={id} variants={product?.variants || []} />
+          </>
         ) : (
           <div className="max-w-3xl rounded-card border border-dashed border-border-light bg-surface-light/60 p-6 text-sm text-text-muted">
             Save the product first, then you can add Cloudinary photos on the next screen.

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Search, SlidersHorizontal } from 'lucide-react';
+import { filterMainCategories } from '@/constants/catalogue';
 import { STOCK_STATUSES } from '@/constants';
 
 const SORT_OPTIONS = [

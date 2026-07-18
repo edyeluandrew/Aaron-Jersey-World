@@ -11,9 +11,12 @@ import ErrorState from '@/components/common/ErrorState';
 import SectionHeading from '@/components/common/SectionHeading';
 import ProductGallery from '@/components/products/ProductGallery';
 import ProductGrid from '@/components/products/ProductGrid';
+import { FormField } from '@/components/forms/FormField';
 import { useProduct, useRelatedProducts } from '@/hooks/useCatalogue';
 import {
   buildProductWhatsAppMessage,
+  buildQuoteSearchParams,
+  findMatchingVariant,
   formatProductPrice,
   getUniqueVariantValues,
   STOCK_LABELS,
@@ -26,6 +29,7 @@ export default function ProductDetailPage() {
 
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColour, setSelectedColour] = useState('');
+  const [quantity, setQuantity] = useState(1);
 
   if (isLoading) {
     return (
@@ -53,12 +57,23 @@ export default function ProductDetailPage() {
   }
 
   const stock = STOCK_LABELS[product.stockStatus] || STOCK_LABELS.CONTACT_FOR_AVAILABILITY;
-  const priceLabel = formatProductPrice(product);
+  const activeVariant = findMatchingVariant(product.variants, {
+    size: selectedSize,
+    colour: selectedColour,
+  });
+  const priceLabel = formatProductPrice(product, activeVariant);
   const sizes = getUniqueVariantValues(product.variants, 'size');
   const colours = getUniqueVariantValues(product.variants, 'colour');
+  const quoteParams = buildQuoteSearchParams({
+    product,
+    size: selectedSize,
+    colour: selectedColour,
+    quantity,
+  });
   const whatsappMessage = buildProductWhatsAppMessage(product, {
     size: selectedSize,
     colour: selectedColour,
+    quantity,
   });
 
   return (
@@ -156,9 +171,22 @@ export default function ProductDetailPage() {
               </div>
             )}
 
+            <div className="mb-6">
+              <FormField label="Quantity" htmlFor="product-quantity">
+                <input
+                  id="product-quantity"
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(event) => setQuantity(Math.max(1, Number(event.target.value) || 1))}
+                  className="w-full max-w-[160px] rounded-button border border-border-light bg-white px-3 py-2.5 text-sm"
+                />
+              </FormField>
+            </div>
+
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <WhatsAppButton message={whatsappMessage} label="Enquire on WhatsApp" className="justify-center" />
-              <Button to={`/request-quote?product=${product.slug}`}>Request Quote</Button>
+              <Button to={`/request-quote?${quoteParams}`}>Request Quote</Button>
             </div>
 
             {product.sku && (

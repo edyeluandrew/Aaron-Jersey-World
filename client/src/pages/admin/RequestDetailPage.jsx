@@ -11,6 +11,7 @@ import ErrorState from '@/components/common/ErrorState';
 import { ADMIN_QUERY_KEYS, REQUEST_TYPES } from '@/constants/adminNavigation';
 import { fetchAdminRequest, updateAdminRequestStatus } from '@/services/adminRequests';
 import { formatAdminDate, formatLabel } from '@/utils/admin';
+import { formatSizeQuantitiesSummary } from '@/utils/product';
 
 const TYPE_MAP = {
   inquiries: 'inquiries',
@@ -101,6 +102,12 @@ export default function RequestDetailPage() {
           <DetailField label="Description" value={data.description} />
           <DetailField label="Products required" value={data.productsRequired} />
           <DetailField label="Quantity" value={data.quantity || data.estimatedQuantity} />
+          <DetailField label="Selected size" value={data.selectedSize} />
+          <DetailField label="Selected colour" value={data.selectedColour} />
+          <DetailField
+            label="Size breakdown"
+            value={formatSizeQuantitiesSummary(data.sizeQuantities)}
+          />
           <DetailField label="Budget" value={data.budgetRange} />
           <DetailField label="Required date" value={data.requiredDate ? formatAdminDate(data.requiredDate) : null} />
           <DetailField
