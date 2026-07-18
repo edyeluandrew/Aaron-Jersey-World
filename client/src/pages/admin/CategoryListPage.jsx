@@ -52,8 +52,11 @@ export default function CategoryListPage() {
       label: 'Actions',
       render: (row) => (
         <div className="flex gap-2">
-          <Link to={`/categories/${row.slug}`} className="text-sm font-semibold text-brand-red hover:underline">
-            View
+          <Link to={`/admin/categories/${row.id}/edit`} className="text-sm font-semibold text-brand-red hover:underline">
+            Edit
+          </Link>
+          <Link to={`/categories/${row.slug}`} className="text-sm font-semibold text-text-muted hover:text-brand-black hover:underline">
+            View site
           </Link>
           <button
             type="button"
