@@ -15,11 +15,14 @@ export default function AdminLayout() {
   );
 }
 
-export function AdminPage({ title, actions, children }) {
+export function AdminPage({ title, description, actions, children }) {
   return (
     <>
       <AdminHeader title={title} actions={actions} />
-      <main className="flex-1 px-4 py-6 lg:px-8">{children}</main>
+      <main className="flex-1 px-4 py-6 lg:px-8">
+        {description && <p className="mb-6 max-w-3xl text-sm text-text-muted">{description}</p>}
+        {children}
+      </main>
     </>
   );
 }

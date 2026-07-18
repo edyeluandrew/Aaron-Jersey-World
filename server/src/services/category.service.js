@@ -3,6 +3,7 @@ import { AppError } from '../utils/apiResponse.js';
 import { generateUniqueSlug } from '../utils/slug.js';
 import { safeDeleteCloudinaryAsset } from './cloudinary.service.js';
 import { enrichCategoryWithUrls } from '../utils/cloudinaryTransforms.js';
+import { MAIN_CATEGORY_SLUGS } from '../constants/catalogue.js';
 
 function enrichCategories(categories) {
   return categories.map(enrichCategoryWithUrls);
@@ -135,6 +136,9 @@ export async function deleteCategory(id) {
 
 export async function listAdminCategories() {
   const categories = await prisma.category.findMany({
+    where: {
+      slug: { in: MAIN_CATEGORY_SLUGS },
+    },
     orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     include: {
       _count: { select: { products: true } },

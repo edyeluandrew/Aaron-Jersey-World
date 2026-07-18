@@ -1,7 +1,7 @@
 export const ADMIN_NAV = [
   { label: 'Dashboard', to: '/admin', end: true },
   { label: 'Products', to: '/admin/products' },
-  { label: 'Categories', to: '/admin/categories' },
+  { label: 'Main categories', to: '/admin/categories' },
   { label: 'Hero banners', to: '/admin/hero-banners' },
   { label: 'Inquiries', to: '/admin/inquiries' },
   { label: 'Quotes', to: '/admin/quotes' },

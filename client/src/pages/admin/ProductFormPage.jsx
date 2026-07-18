@@ -14,6 +14,7 @@ import { inputClassName, selectClassName, textareaClassName } from '@/constants/
 import { ADMIN_QUERY_KEYS } from '@/constants/adminNavigation';
 import { QUERY_KEYS } from '@/constants/navigation';
 import { PRICE_TYPES, STOCK_STATUSES } from '@/constants';
+import { filterMainCategories } from '@/constants/catalogue';
 import { fetchCategories } from '@/services/catalogue';
 import {
   createAdminProduct,
@@ -38,6 +39,7 @@ export default function ProductFormPage() {
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
+  const mainCategories = filterMainCategories(categories);
 
   const {
     register,
@@ -154,12 +156,15 @@ export default function ProductFormPage() {
           <FormField label="Category" htmlFor="categoryId" required error={errors.categoryId?.message}>
             <select id="categoryId" className={selectClassName} {...register('categoryId', { required: 'Category is required' })}>
               <option value="">Select category</option>
-              {categories.map((category) => (
+              {mainCategories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
             </select>
+            <p className="mt-1 text-xs text-text-muted">
+              Main catalogue: Jerseys, Training Equipment, Custom Kits, Trophies and Medals.
+            </p>
           </FormField>
 
           <div className="grid gap-5 sm:grid-cols-2">
