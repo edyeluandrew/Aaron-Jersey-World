@@ -32,16 +32,16 @@ export default function HomePage() {
         path="/"
       />
 
-      <section className="relative min-h-[520px] overflow-hidden bg-brand-black text-white md:min-h-[580px] lg:min-h-[640px]">
+      <section className="relative min-h-[420px] overflow-hidden bg-brand-black text-white md:min-h-[460px] lg:min-h-[500px]">
         {bannersLoading ? (
           <div className="absolute inset-0 animate-pulse bg-brand-charcoal" />
         ) : (
           <HeroSlider banners={banners} variant="background" />
         )}
 
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,31,38,0.2),transparent_50%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,31,38,0.12),transparent_55%)]" />
 
-        <Container className="relative z-10 flex min-h-[520px] items-center section-padding md:min-h-[580px] lg:min-h-[640px]">
+        <Container className="relative z-10 flex min-h-[420px] items-center section-padding md:min-h-[460px] lg:min-h-[500px]">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}

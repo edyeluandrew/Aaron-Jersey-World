@@ -5,7 +5,7 @@ const TRANSFORM_PRESETS = {
   productDetail: ['f_auto', 'q_auto', 'w_1200', 'h_1200', 'c_limit'],
   productThumbnail: ['f_auto', 'q_auto', 'w_200', 'h_200', 'c_fill'],
   categoryCard: ['f_auto', 'q_auto', 'w_800', 'h_600', 'c_fill'],
-  heroBanner: ['f_auto', 'q_auto', 'w_1600', 'h_900', 'c_fill'],
+  heroBanner: ['f_auto', 'q_auto:good', 'w_1200', 'h_675', 'c_fill', 'e_brightness:30', 'e_saturation:10'],
   testimonialAvatar: ['f_auto', 'q_auto', 'w_120', 'h_120', 'c_fill'],
 };
 

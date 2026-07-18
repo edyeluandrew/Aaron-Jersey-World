@@ -5,9 +5,9 @@ const FALLBACK_SLIDE = {
   id: 'fallback',
   title: 'Sportswear showcase',
   imageUrls: {
-    hero: 'https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,w_1600,h_900,c_fill/sample.jpg',
+    hero: 'https://res.cloudinary.com/demo/image/upload/f_auto,q_auto:good,w_1200,h_675,c_fill,e_brightness:30/sample.jpg',
   },
-  imageUrl: 'https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,w_1600,h_900,c_fill/sample.jpg',
+  imageUrl: 'https://res.cloudinary.com/demo/image/upload/f_auto,q_auto:good,w_1200,h_675,c_fill,e_brightness:30/sample.jpg',
 };
 
 function getSlideImage(slide) {
@@ -42,7 +42,7 @@ export default function HeroSlider({ banners = [], variant = 'background', class
       } ${className}`}
       aria-hidden={isBackground}
     >
-      <div className={isBackground ? 'relative h-full w-full' : 'relative aspect-[4/5] min-h-[280px] sm:min-h-[360px] lg:min-h-[420px]'}>
+      <div className={isBackground ? 'relative h-full w-full bg-brand-black' : 'relative aspect-[4/5] min-h-[280px] sm:min-h-[360px] lg:min-h-[420px]'}>
         {slides.map((slide, slideIndex) => {
           const src = getSlideImage(slide);
           const isActive = slideIndex === index;
@@ -52,15 +52,15 @@ export default function HeroSlider({ banners = [], variant = 'background', class
               key={slide.id}
               src={src}
               alt=""
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-                isActive ? 'opacity-100' : 'pointer-events-none opacity-0'
-              }`}
+              className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
+                isBackground ? 'scale-[0.92] brightness-[1.15] saturate-[1.08]' : ''
+              } ${isActive ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
             />
           );
         })}
 
         {isBackground ? (
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-black/85 via-brand-black/55 to-brand-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-black/55 via-brand-black/25 to-transparent" />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/10 to-transparent" />
         )}
