@@ -32,17 +32,29 @@ export default function HomePage() {
         path="/"
       />
 
-      <section className="relative overflow-hidden bg-brand-black text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,31,38,0.25),transparent_45%)]" />
-        <Container className="relative section-padding grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+      <section className="relative min-h-[520px] overflow-hidden bg-brand-black text-white md:min-h-[580px] lg:min-h-[640px]">
+        {bannersLoading ? (
+          <div className="absolute inset-0 animate-pulse bg-brand-charcoal" />
+        ) : (
+          <HeroSlider banners={banners} variant="background" />
+        )}
+
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,31,38,0.2),transparent_50%)]" />
+
+        <Container className="relative z-10 flex min-h-[520px] items-center section-padding md:min-h-[580px] lg:min-h-[640px]">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="max-w-3xl"
+          >
             <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-brand-red">
               Your Life Partner
             </p>
-            <h1 className="mb-6 max-w-3xl text-[2.625rem] leading-none md:text-[5rem]">
+            <h1 className="mb-6 text-[2.625rem] leading-none md:text-[5rem]">
               EVERYTHING YOUR TEAM NEEDS
             </h1>
-            <p className="mb-8 max-w-2xl text-lg text-white/75">
+            <p className="mb-8 max-w-2xl text-lg text-white/85">
               Club jerseys, custom teamwear, sports equipment, trophies, medals and professional branding for
               individuals, teams, schools and organisations.
             </p>
@@ -58,25 +70,12 @@ export default function HomePage() {
                 className="justify-center px-1 py-3 text-white"
               />
             </div>
-            <ul className="mt-8 grid gap-3 text-sm text-white/70 sm:grid-cols-2">
+            <ul className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-2">
               <li>Individual and bulk orders</li>
               <li>Custom branding available</li>
               <li>Kampala-based supply</li>
               <li>Institutional orders welcome</li>
             </ul>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative lg:col-span-1"
-          >
-            {bannersLoading ? (
-              <div className="min-h-[280px] animate-pulse rounded-card bg-brand-charcoal lg:min-h-[420px]" />
-            ) : (
-              <HeroSlider banners={banners} />
-            )}
           </motion.div>
         </Container>
       </section>
