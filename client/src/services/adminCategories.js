@@ -19,3 +19,13 @@ export async function deleteAdminCategory(id) {
   const { data } = await apiClient.delete(`/admin/categories/${id}`);
   return data;
 }
+
+export async function uploadAdminCategoryImage(categoryId, file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const { data } = await apiClient.post(`/admin/uploads/categories/${categoryId}/image`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+}

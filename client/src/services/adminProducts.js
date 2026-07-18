@@ -24,3 +24,31 @@ export async function deleteAdminProduct(id) {
   const { data } = await apiClient.delete(`/admin/products/${id}`);
   return data;
 }
+
+export async function addAdminProductImage(productId, payload) {
+  const { data } = await apiClient.post(`/admin/products/${productId}/images`, payload);
+  return data.data;
+}
+
+export async function updateAdminProductImage(productId, imageId, payload) {
+  const { data } = await apiClient.patch(`/admin/products/${productId}/images/${imageId}`, payload);
+  return data.data;
+}
+
+export async function deleteAdminProductImage(productId, imageId) {
+  const { data } = await apiClient.delete(`/admin/products/${productId}/images/${imageId}`);
+  return data;
+}
+
+export async function uploadAdminProductImage(productId, file, meta = {}) {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (meta.altText) formData.append('altText', meta.altText);
+  if (meta.isPrimary != null) formData.append('isPrimary', String(meta.isPrimary));
+  if (meta.sortOrder != null) formData.append('sortOrder', String(meta.sortOrder));
+
+  const { data } = await apiClient.post(`/admin/uploads/products/${productId}/images`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+}
