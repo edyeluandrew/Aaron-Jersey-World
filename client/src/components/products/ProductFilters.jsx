@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { STOCK_STATUSES } from '@/constants';
 
@@ -32,7 +33,9 @@ export default function ProductFilters({
   variant = 'sidebar',
   onOpenMobile,
   hideCategory = false,
+  navigateToCategory = false,
 }) {
+  const navigate = useNavigate();
   const hasPriceSort = filters?.priceRange?.hasPricedProducts;
   const sortOptions = SORT_OPTIONS.filter(
     (opt) => hasPriceSort || !opt.value.startsWith('price-'),
@@ -57,7 +60,14 @@ export default function ProductFilters({
         <FilterField label="Category">
           <select
             value={values.category || ''}
-            onChange={(e) => onChange({ category: e.target.value })}
+            onChange={(e) => {
+              const slug = e.target.value;
+              if (navigateToCategory && slug) {
+                navigate(`/categories/${slug}`);
+                return;
+              }
+              onChange({ category: slug });
+            }}
             className={selectClass}
           >
             <option value="">All categories</option>

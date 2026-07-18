@@ -6,7 +6,7 @@ import Container from '@/components/common/Container';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import ErrorState from '@/components/common/ErrorState';
 import Button from '@/components/common/Button';
-import ProductCatalogue from '@/components/products/ProductCatalogue';
+import CategoryProductCatalogue from '@/components/products/CategoryProductCatalogue';
 import { useCategory } from '@/hooks/useCatalogue';
 
 export default function CategoryPage() {
@@ -31,7 +31,7 @@ export default function CategoryPage() {
         />
         <div className="mt-6 text-center">
           <Button to="/products" variant="secondary">
-            Browse all products
+            Browse categories
           </Button>
         </div>
       </Container>
@@ -45,16 +45,17 @@ export default function CategoryPage() {
         description={category.description || `Browse ${category.name} from Aaron Jersey World.`}
         path={`/categories/${category.slug}`}
       />
-      <ProductCatalogue
-        defaultCategory={category.slug}
-        lockCategory
+      <CategoryProductCatalogue
+        categorySlug={category.slug}
+        categoryName={category.name}
+        productCount={category._count?.products}
         hero={
           <PageHero
             eyebrow="Category"
             title={category.name.toUpperCase()}
             description={
               category.description ||
-              `Explore our ${category.name.toLowerCase()} range. Confirm availability on enquiry.`
+              `All ${category.name.toLowerCase()} products with photos. Scroll to load more if this category has 100+ items.`
             }
           />
         }

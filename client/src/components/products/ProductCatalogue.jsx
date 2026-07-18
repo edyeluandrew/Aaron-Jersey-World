@@ -46,6 +46,7 @@ export default function ProductCatalogue({
     onChange: handleChange,
     onClear: handleClear,
     hideCategory: lockCategory,
+    navigateToCategory: !lockCategory,
   };
 
   return (

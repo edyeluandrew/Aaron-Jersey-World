@@ -9,6 +9,7 @@ import NotFoundPage from '@/pages/public/NotFoundPage';
 
 const HomePage = lazy(() => import('@/pages/public/HomePage'));
 const ProductsPage = lazy(() => import('@/pages/public/ProductsPage'));
+const AllProductsPage = lazy(() => import('@/pages/public/AllProductsPage'));
 const ProductDetailPage = lazy(() => import('@/pages/public/ProductDetailPage'));
 const CategoryPage = lazy(() => import('@/pages/public/CategoryPage'));
 const SearchPage = lazy(() => import('@/pages/public/SearchPage'));
@@ -44,6 +45,7 @@ export default function AppRoutes() {
           <Route element={<PublicLayout />}>
             <Route index element={<HomePage />} />
             <Route path="products" element={<ProductsPage />} />
+            <Route path="products/all" element={<AllProductsPage />} />
             <Route path="products/:slug" element={<ProductDetailPage />} />
             <Route path="categories/:slug" element={<CategoryPage />} />
             <Route path="custom-branding" element={<CustomBrandingPage />} />

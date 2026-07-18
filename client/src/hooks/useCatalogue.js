@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/constants/navigation';
 import {
   fetchCategories,
@@ -38,6 +38,18 @@ export function useProducts(params = {}) {
   return useQuery({
     queryKey: QUERY_KEYS.products(params),
     queryFn: () => fetchProducts(params),
+  });
+}
+
+export function useInfiniteProducts(params = {}) {
+  const { page: _page, ...rest } = params;
+
+  return useInfiniteQuery({
+    queryKey: [...QUERY_KEYS.products(rest), 'infinite'],
+    queryFn: ({ pageParam = 1 }) => fetchProducts({ ...rest, page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.hasNextPage ? lastPage.meta.page + 1 : undefined,
   });
 }
 
