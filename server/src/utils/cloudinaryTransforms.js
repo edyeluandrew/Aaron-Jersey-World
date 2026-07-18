@@ -79,3 +79,17 @@ export function enrichCategoryWithUrls(category) {
     },
   };
 }
+
+export function enrichBannerWithUrls(banner) {
+  if (!banner?.imageUrl) return banner;
+
+  const hero = getHeroBannerUrl(banner.imagePublicId) || banner.imageUrl;
+
+  return {
+    ...banner,
+    imageUrls: {
+      original: banner.imageUrl,
+      hero: hero || banner.imageUrl,
+    },
+  };
+}

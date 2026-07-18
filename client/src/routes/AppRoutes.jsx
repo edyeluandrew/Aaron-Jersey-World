@@ -27,6 +27,8 @@ const ProductListPage = lazy(() => import('@/pages/admin/ProductListPage'));
 const ProductFormPage = lazy(() => import('@/pages/admin/ProductFormPage'));
 const CategoryListPage = lazy(() => import('@/pages/admin/CategoryListPage'));
 const CategoryFormPage = lazy(() => import('@/pages/admin/CategoryFormPage'));
+const BannerListPage = lazy(() => import('@/pages/admin/BannerListPage'));
+const BannerFormPage = lazy(() => import('@/pages/admin/BannerFormPage'));
 const RequestListPage = lazy(() => import('@/pages/admin/RequestListPage'));
 const RequestDetailPage = lazy(() => import('@/pages/admin/RequestDetailPage'));
 
@@ -66,6 +68,9 @@ export default function AppRoutes() {
               <Route path="categories" element={<CategoryListPage />} />
               <Route path="categories/new" element={<CategoryFormPage />} />
               <Route path="categories/:id/edit" element={<CategoryFormPage />} />
+              <Route path="hero-banners" element={<BannerListPage />} />
+              <Route path="hero-banners/new" element={<BannerFormPage />} />
+              <Route path="hero-banners/:id/edit" element={<BannerFormPage />} />
               <Route path="inquiries" element={<RequestListPage />} />
               <Route path="inquiries/:id" element={<RequestDetailPage />} />
               <Route path="quotes" element={<RequestListPage />} />

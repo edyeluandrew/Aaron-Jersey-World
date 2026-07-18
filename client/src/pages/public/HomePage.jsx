@@ -6,8 +6,10 @@ import Button from '@/components/common/Button';
 import WhatsAppButton from '@/components/common/WhatsAppButton';
 import Container from '@/components/common/Container';
 import CategoryCard from '@/components/home/CategoryCard';
+import HeroSlider from '@/components/home/HeroSlider';
 import ProductGrid from '@/components/products/ProductGrid';
 import { useCategories, useFeaturedProducts } from '@/hooks/useCatalogue';
+import { useHeroBanners } from '@/hooks/useBanners';
 import { APP_DESCRIPTION } from '@/constants';
 
 export default function HomePage() {
@@ -19,6 +21,7 @@ export default function HomePage() {
     refetch,
   } = useFeaturedProducts(8);
 
+  const { data: banners = [], isLoading: bannersLoading } = useHeroBanners();
   const featuredCategories = categories.slice(0, 8);
 
   return (
@@ -67,14 +70,13 @@ export default function HomePage() {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative hidden min-h-[420px] overflow-hidden rounded-card border border-white/10 bg-brand-charcoal lg:block"
+            className="relative lg:col-span-1"
           >
-            <img
-              src="https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,w_900,h_700,c_fill/sample.jpg"
-              alt="Sportswear and team equipment showcase"
-              className="h-full w-full object-cover opacity-90"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-brand-black/70 to-transparent" />
+            {bannersLoading ? (
+              <div className="min-h-[280px] animate-pulse rounded-card bg-brand-charcoal lg:min-h-[420px]" />
+            ) : (
+              <HeroSlider banners={banners} />
+            )}
           </motion.div>
         </Container>
       </section>

@@ -7,6 +7,7 @@ import adminCategoryRoutes from './admin/category.routes.js';
 import adminProductRoutes from './admin/product.routes.js';
 import adminUploadRoutes from './admin/upload.routes.js';
 import adminRequestRoutes from './admin/request.routes.js';
+import adminBannerRoutes from './admin/banner.routes.js';
 
 const router = Router();
 
@@ -51,6 +52,7 @@ router.get('/dashboard', async (_req, res, next) => {
 });
 
 router.use('/categories', adminCategoryRoutes);
+router.use('/banners', adminBannerRoutes);
 router.use('/products', adminProductRoutes);
 router.use('/uploads', adminUploadRoutes);
 router.use('/', adminRequestRoutes);
