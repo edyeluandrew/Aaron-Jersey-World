@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import PageMeta from '@/components/common/PageMeta';
 import SectionHeading from '@/components/common/SectionHeading';
 import Button from '@/components/common/Button';
 import WhatsAppButton from '@/components/common/WhatsAppButton';
 import Container from '@/components/common/Container';
 import CategoryCard from '@/components/home/CategoryCard';
-import HeroSlider from '@/components/home/HeroSlider';
+import HeroSection from '@/components/home/HeroSection';
 import ProductGrid from '@/components/products/ProductGrid';
 import { useCategories, useFeaturedProducts } from '@/hooks/useCatalogue';
 import { useHeroBanners } from '@/hooks/useBanners';
@@ -32,53 +31,7 @@ export default function HomePage() {
         path="/"
       />
 
-      <section className="relative min-h-[420px] overflow-hidden bg-brand-black text-white md:min-h-[460px] lg:min-h-[500px]">
-        {bannersLoading ? (
-          <div className="absolute inset-0 animate-pulse bg-brand-charcoal" />
-        ) : (
-          <HeroSlider banners={banners} variant="background" />
-        )}
-
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,31,38,0.12),transparent_55%)]" />
-
-        <Container className="relative z-10 flex min-h-[420px] items-center section-padding md:min-h-[460px] lg:min-h-[500px]">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            className="max-w-3xl"
-          >
-            <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-brand-red">
-              Your Life Partner
-            </p>
-            <h1 className="mb-6 text-[2.625rem] leading-none md:text-[5rem]">
-              EVERYTHING YOUR TEAM NEEDS
-            </h1>
-            <p className="mb-8 max-w-2xl text-lg text-white/85">
-              Club jerseys, custom teamwear, sports equipment, trophies, medals and professional branding for
-              individuals, teams, schools and organisations.
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Button to="/products" size="lg">
-                Explore Products
-              </Button>
-              <Button to="/request-quote" variant="secondary" size="lg">
-                Request Bulk Quote
-              </Button>
-              <WhatsAppButton
-                message="Hello Aaron Jersey World, I would like to enquire about your products and services."
-                className="justify-center px-1 py-3 text-white"
-              />
-            </div>
-            <ul className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-2">
-              <li>Individual and bulk orders</li>
-              <li>Custom branding available</li>
-              <li>Kampala-based supply</li>
-              <li>Institutional orders welcome</li>
-            </ul>
-          </motion.div>
-        </Container>
-      </section>
+      <HeroSection banners={banners} isLoading={bannersLoading} />
 
       <section className="section-padding">
         <Container>

@@ -136,8 +136,14 @@ export default function BannerFormPage() {
           label="Cloudinary Secure URL"
           previewUrl={imageUrl}
           urlRegister={register('imageUrl', { required: 'Image URL is required' })}
-          helpText="Use folder: aaron-jersey-world/banners — landscape photos work best."
+          helpText="Use folder: aaron-jersey-world/banners — portrait or square product photos work best for the hero showcase."
         />
+
+        <p className="rounded-card border border-border-light bg-surface-light/60 px-4 py-3 text-sm text-text-muted">
+          <strong className="text-brand-black">Title</strong> = big headline on the left.
+          <strong className="ml-2 text-brand-black">Small label</strong> = red badge on the image (e.g. &quot;New season kits&quot;).
+          Leave title blank to use the default site headline.
+        </p>
 
         <div className="rounded-card border border-border-light bg-surface-light/60 p-4">
           <p className="mb-3 text-sm font-semibold text-brand-black">Or upload from computer</p>
@@ -163,11 +169,11 @@ export default function BannerFormPage() {
           </Button>
         </div>
 
-        <FormField label="Slide title (optional)" htmlFor="title">
-          <input id="title" className={inputClassName} {...register('title')} />
+        <FormField label="Headline (optional)" htmlFor="title">
+          <input id="title" className={inputClassName} {...register('title')} placeholder="Stand out with your team" />
         </FormField>
 
-        <FormField label="Small label on slide (optional)" htmlFor="subtitle">
+        <FormField label="Badge label (optional)" htmlFor="subtitle">
           <input id="subtitle" className={inputClassName} {...register('subtitle')} placeholder="e.g. New season kits" />
         </FormField>
 
