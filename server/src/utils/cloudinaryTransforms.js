@@ -5,7 +5,8 @@ const TRANSFORM_PRESETS = {
   productDetail: ['f_auto', 'q_auto', 'w_1200', 'h_1200', 'c_limit'],
   productThumbnail: ['f_auto', 'q_auto', 'w_200', 'h_200', 'c_fill'],
   categoryCard: ['f_auto', 'q_auto', 'w_800', 'h_600', 'c_fill'],
-  heroBanner: ['f_auto', 'q_auto:good', 'w_1200', 'h_675', 'c_fill', 'e_brightness:30', 'e_saturation:10'],
+  heroBannerCard: ['f_auto', 'q_auto:best', 'w_1000', 'h_1250', 'c_fill', 'dpr_auto'],
+  heroBannerFull: ['f_auto', 'q_auto:best', 'w_1920', 'h_1200', 'c_fill', 'dpr_auto'],
   testimonialAvatar: ['f_auto', 'q_auto', 'w_120', 'h_120', 'c_fill'],
 };
 
@@ -40,8 +41,17 @@ export function getCategoryCardUrl(publicId) {
   return buildTransformUrl(publicId, 'categoryCard');
 }
 
+export function getHeroBannerCardUrl(publicId) {
+  return buildTransformUrl(publicId, 'heroBannerCard');
+}
+
+export function getHeroBannerFullUrl(publicId) {
+  return buildTransformUrl(publicId, 'heroBannerFull');
+}
+
+/** @deprecated Use getHeroBannerCardUrl */
 export function getHeroBannerUrl(publicId) {
-  return buildTransformUrl(publicId, 'heroBanner');
+  return getHeroBannerCardUrl(publicId);
 }
 
 export function getTestimonialAvatarUrl(publicId) {
@@ -83,13 +93,15 @@ export function enrichCategoryWithUrls(category) {
 export function enrichBannerWithUrls(banner) {
   if (!banner?.imageUrl) return banner;
 
-  const hero = getHeroBannerUrl(banner.imagePublicId) || banner.imageUrl;
+  const hero = getHeroBannerCardUrl(banner.imagePublicId) || banner.imageUrl;
+  const heroFull = getHeroBannerFullUrl(banner.imagePublicId) || banner.imageUrl;
 
   return {
     ...banner,
     imageUrls: {
       original: banner.imageUrl,
       hero: hero || banner.imageUrl,
+      heroFull: heroFull || banner.imageUrl,
     },
   };
 }

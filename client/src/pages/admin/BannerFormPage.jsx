@@ -136,7 +136,7 @@ export default function BannerFormPage() {
           label="Cloudinary Secure URL"
           previewUrl={imageUrl}
           urlRegister={register('imageUrl', { required: 'Image URL is required' })}
-          helpText="Use folder: aaron-jersey-world/banners — portrait or square product photos work best for the hero showcase."
+          helpText="Use folder: aaron-jersey-world/banners — upload high-res portrait photos (at least 1200×1500px) for sharp full-size display."
         />
 
         <p className="rounded-card border border-border-light bg-surface-light/60 px-4 py-3 text-sm text-text-muted">

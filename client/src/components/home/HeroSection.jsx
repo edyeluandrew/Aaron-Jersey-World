@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Container from '@/components/common/Container';
 import Button from '@/components/common/Button';
 import WhatsAppButton from '@/components/common/WhatsAppButton';
+import { buildHeroImageSrcSet, getHeroImageSrc } from '@/utils/cloudinary';
 
 const FALLBACK_SLIDE = {
   id: 'fallback',
@@ -35,7 +36,7 @@ const DEFAULT_COPY = {
 };
 
 function getSlideImage(slide) {
-  return slide.imageUrls?.hero || slide.imageUrls?.original || slide.imageUrl;
+  return getHeroImageSrc(slide);
 }
 
 const PLACEHOLDER_EYEBROWS = ['development placeholder', 'manage banners from admin'];
@@ -197,20 +198,25 @@ export default function HeroSection({ banners = [], isLoading = false }) {
                 <div className="relative aspect-[4/5] sm:aspect-[5/6]">
                   {slides.map((slide, slideIndex) => {
                     const src = getSlideImage(slide);
+                    const srcSet = buildHeroImageSrcSet(slide);
                     const isActive = slideIndex === index;
 
                     return (
                       <motion.img
                         key={slide.id}
                         src={src}
+                        srcSet={srcSet || undefined}
+                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 460px, 500px"
                         alt={slide.title || 'Hero banner'}
+                        decoding="async"
+                        fetchPriority={slideIndex === 0 ? 'high' : 'auto'}
                         initial={false}
                         animate={{
                           opacity: isActive ? 1 : 0,
-                          scale: isActive ? 1 : 1.04,
+                          scale: isActive ? 1 : 1.02,
                         }}
                         transition={{ duration: 0.75, ease: 'easeOut' }}
-                        className="absolute inset-0 h-full w-full object-cover object-center brightness-[1.08] saturate-[1.05]"
+                        className="absolute inset-0 h-full w-full object-cover object-center"
                       />
                     );
                   })}
