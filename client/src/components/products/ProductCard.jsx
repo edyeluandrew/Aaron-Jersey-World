@@ -5,7 +5,7 @@ import { formatProductPrice, STOCK_LABELS } from '@/utils/product';
 
 export default function ProductCard({ product }) {
   const image = product.images?.[0];
-  const imageUrl = image?.urls?.card || image?.secureUrl;
+  const imageUrl = image?.secureUrl || image?.urls?.original || image?.urls?.card;
   const stock = STOCK_LABELS[product.stockStatus] || STOCK_LABELS.CONTACT_FOR_AVAILABILITY;
   const priceLabel = formatProductPrice(product);
 

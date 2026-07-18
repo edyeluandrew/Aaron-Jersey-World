@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 export default function CategoryCard({ category }) {
-  const imageUrl = category.imageUrls?.card || category.imageUrl;
+  const imageUrl = category.imageUrls?.original || category.imageUrl || category.imageUrls?.card;
 
   return (
     <Link

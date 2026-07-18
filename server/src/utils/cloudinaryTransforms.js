@@ -12,13 +12,16 @@ const TRANSFORM_PRESETS = {
 function buildTransformUrl(publicId, preset, resourceType = 'image') {
   if (!publicId || !env.CLOUDINARY_CLOUD_NAME) return null;
 
+  const cloudName = env.CLOUDINARY_CLOUD_NAME.trim();
+  if (!cloudName || /\s/.test(cloudName)) return null;
+
   const transforms = TRANSFORM_PRESETS[preset];
   if (!transforms) return null;
 
   const transformPath = transforms.join(',');
   const deliveryType = resourceType === 'raw' ? 'raw' : 'image';
 
-  return `https://res.cloudinary.com/${env.CLOUDINARY_CLOUD_NAME}/${deliveryType}/upload/${transformPath}/${publicId}`;
+  return `https://res.cloudinary.com/${cloudName}/${deliveryType}/upload/${transformPath}/${publicId}`;
 }
 
 export function getProductCardUrl(publicId) {
@@ -48,25 +51,31 @@ export function getTestimonialAvatarUrl(publicId) {
 export function enrichImageWithUrls(image) {
   if (!image?.publicId) return image;
 
+  const card = getProductCardUrl(image.publicId) || image.secureUrl;
+  const detail = getProductDetailUrl(image.publicId) || image.secureUrl;
+  const thumbnail = getProductThumbnailUrl(image.publicId) || image.secureUrl;
+
   return {
     ...image,
     urls: {
       original: image.secureUrl,
-      card: getProductCardUrl(image.publicId),
-      detail: getProductDetailUrl(image.publicId),
-      thumbnail: getProductThumbnailUrl(image.publicId),
+      card,
+      detail,
+      thumbnail,
     },
   };
 }
 
 export function enrichCategoryWithUrls(category) {
-  if (!category?.imagePublicId) return category;
+  if (!category?.imageUrl && !category?.imagePublicId) return category;
+
+  const card = getCategoryCardUrl(category.imagePublicId) || category.imageUrl;
 
   return {
     ...category,
     imageUrls: {
       original: category.imageUrl,
-      card: getCategoryCardUrl(category.imagePublicId),
+      card: card || category.imageUrl,
     },
   };
 }
