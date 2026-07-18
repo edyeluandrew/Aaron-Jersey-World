@@ -38,13 +38,21 @@ function getSlideImage(slide) {
   return slide.imageUrls?.hero || slide.imageUrls?.original || slide.imageUrl;
 }
 
+const PLACEHOLDER_EYEBROWS = ['development placeholder', 'manage banners from admin'];
+
+function isPlaceholderEyebrow(text) {
+  const lower = text.toLowerCase();
+  return PLACEHOLDER_EYEBROWS.some((phrase) => lower.includes(phrase));
+}
+
 function getSlideCopy(slide) {
   const rawTitle = slide.title?.trim() || '';
   const headline = rawTitle && !PLACEHOLDER_TITLES.has(rawTitle.toLowerCase())
     ? rawTitle
     : DEFAULT_COPY.headline;
 
-  const eyebrow = slide.subtitle?.trim() || DEFAULT_COPY.eyebrow;
+  const rawEyebrow = slide.subtitle?.trim() || '';
+  const eyebrow = rawEyebrow && !isPlaceholderEyebrow(rawEyebrow) ? rawEyebrow : DEFAULT_COPY.eyebrow;
 
   return {
     eyebrow,
@@ -118,11 +126,11 @@ export default function HeroSection({ banners = [], isLoading = false }) {
 
   return (
     <section className="relative overflow-hidden bg-brand-black text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(201,31,38,0.18),transparent_42%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(245,183,0,0.08),transparent_35%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_30%,rgba(201,31,38,0.35),transparent_48%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_70%,rgba(245,183,0,0.12),transparent_40%)]" />
 
       <Container className="relative section-padding">
-        <div className="grid min-h-[520px] items-center gap-10 lg:min-h-[600px] lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+        <div className="grid min-h-[520px] items-center gap-8 lg:min-h-[600px] lg:grid-cols-[1.05fr_0.88fr] lg:gap-6 xl:gap-8">
           <div className="order-2 lg:order-1">
             <AnimatePresence mode="wait">
               <motion.div
@@ -131,17 +139,17 @@ export default function HeroSection({ banners = [], isLoading = false }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.4 }}
-                className="max-w-xl"
+                className="relative max-w-xl rounded-[1.5rem] border border-white/15 bg-gradient-to-br from-white/10 via-brand-charcoal/90 to-brand-red/15 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-sm md:p-8 lg:p-9"
               >
-                <span className="mb-5 inline-flex rounded-full border border-brand-red/30 bg-brand-red/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-brand-red">
+                <span className="mb-5 inline-flex rounded-full bg-brand-red px-4 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-white shadow-[0_8px_24px_rgba(201,31,38,0.45)]">
                   {copy.eyebrow}
                 </span>
 
-                <h1 className="mb-6 font-heading text-[2.75rem] leading-[0.95] tracking-wide md:text-[4.5rem] lg:text-[5rem]">
+                <h1 className="mb-6 font-heading text-[2.75rem] leading-[0.95] tracking-wide text-white md:text-[4.5rem] lg:text-[5rem]">
                   {copy.headline}
                 </h1>
 
-                <p className="mb-8 max-w-lg text-base leading-relaxed text-white/78 md:text-lg">
+                <p className="mb-8 max-w-lg text-base leading-relaxed text-white/92 md:text-lg">
                   {copy.description}
                 </p>
 
@@ -155,25 +163,25 @@ export default function HeroSection({ banners = [], isLoading = false }) {
                 <div className="mt-6">
                   <WhatsAppButton
                     message="Hello Aaron Jersey World, I would like to enquire about your products and services."
-                    className="justify-start px-0 py-2 text-white/85 hover:text-white"
+                    className="justify-start px-0 py-2 text-white hover:text-brand-gold"
                   />
                 </div>
 
-                <ul className="mt-8 grid gap-2.5 text-sm text-white/65 sm:grid-cols-2">
+                <ul className="mt-8 grid gap-2.5 text-sm text-white/88 sm:grid-cols-2">
                   <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" />
                     Individual and bulk orders
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" />
                     Custom branding available
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" />
                     Kampala-based supply
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" />
                     Institutional orders welcome
                   </li>
                 </ul>
@@ -181,8 +189,8 @@ export default function HeroSection({ banners = [], isLoading = false }) {
             </AnimatePresence>
           </div>
 
-          <div className="order-1 lg:order-2">
-            <div className="relative mx-auto w-full max-w-[520px] lg:max-w-none">
+          <div className="order-1 lg:order-2 lg:-ml-2 xl:-ml-4">
+            <div className="relative mx-auto w-full max-w-[460px] lg:mx-0 lg:max-w-[500px]">
               <div className="absolute -inset-3 rounded-[2rem] bg-gradient-to-br from-brand-red/20 via-transparent to-brand-gold/10 blur-2xl" />
 
               <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-brand-charcoal shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
@@ -210,7 +218,7 @@ export default function HeroSection({ banners = [], isLoading = false }) {
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-black/35 via-transparent to-transparent" />
 
                   {copy.eyebrow && (
-                    <div className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-brand-black shadow-card">
+                    <div className="absolute left-4 top-4 rounded-full bg-brand-red px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-white shadow-card">
                       {copy.eyebrow}
                     </div>
                   )}
