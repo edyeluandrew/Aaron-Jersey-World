@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom';
 import ImageMarquee from '@/components/home/ImageMarquee';
 import { catalogueItemPath, getMainCategoryMeta } from '@/constants/catalogue';
 
-export default function SupplyShowcaseCard({ product, index = 0 }) {
+export default function SupplyShowcaseCard({ product }) {
   const meta = getMainCategoryMeta(product.slug);
   const title = product.name || meta?.name || product.slug;
   const description = product.shortDescription || meta?.description;
-  const direction = index % 2 === 0 ? 'left' : 'right';
 
   return (
     <article className="overflow-hidden rounded-card border border-border-light bg-white shadow-card">
@@ -28,7 +27,7 @@ export default function SupplyShowcaseCard({ product, index = 0 }) {
       </div>
 
       <div className="px-5 py-5 sm:px-6">
-        <ImageMarquee images={product.images} direction={direction} />
+        <ImageMarquee images={product.images} />
       </div>
     </article>
   );

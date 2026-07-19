@@ -76,6 +76,7 @@ export const createProductImageSchema = z.object({
   height: z.coerce.number().int().positive().optional(),
   sortOrder: z.coerce.number().int().optional(),
   isPrimary: z.boolean().optional(),
+  showInHomeMarquee: z.boolean().optional(),
 });
 
 export const updateProductImageSchema = createProductImageSchema.partial();

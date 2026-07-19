@@ -404,6 +404,20 @@ export async function updateProductImage(productId, imageId, data) {
     });
   }
 
+  if (data.showInHomeMarquee) {
+    const selectedCount = await prisma.productImage.count({
+      where: {
+        productId,
+        showInHomeMarquee: true,
+        NOT: { id: imageId },
+      },
+    });
+
+    if (selectedCount >= 7) {
+      throw new AppError('You can only show 7 photos in the homepage marquee for this product', 400);
+    }
+  }
+
   return prisma.productImage.update({
     where: { id: imageId },
     data,

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { FolderOpen, ImagePlus, Star, Trash2, Upload } from 'lucide-react';
+import { FolderOpen, ImagePlus, Rows3, Star, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import Button from '@/components/common/Button';
 import { FormField } from '@/components/forms/FormField';
@@ -14,7 +14,7 @@ import {
   updateAdminProductImage,
   uploadAdminProductImage,
 } from '@/services/adminProducts';
-import { defaultProductCloudinaryFolder } from '@/constants/catalogue';
+import { defaultProductCloudinaryFolder, HOMEPAGE_MARQUEE_IMAGE_LIMIT } from '@/constants/catalogue';
 import { extractCloudinaryPublicId, isCloudinaryUrl } from '@/utils/cloudinary';
 
 function parseCloudinaryUrls(text) {
@@ -41,6 +41,9 @@ export default function ProductImagesManager({ productId, images = [], productSl
     queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.featuredProducts });
     queryClient.invalidateQueries({ queryKey: ['products'] });
+    if (productSlug) {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.product(productSlug) });
+    }
   };
 
   const addImageFromUrl = async (url, { sortOrder, isPrimary, label }) => {
@@ -150,6 +153,20 @@ export default function ProductImagesManager({ productId, images = [], productSl
     onError: (error) => toast.error(error.message || 'Failed to update image'),
   });
 
+  const marqueeMutation = useMutation({
+    mutationFn: ({ imageId, showInHomeMarquee }) =>
+      updateAdminProductImage(productId, imageId, { showInHomeMarquee }),
+    onSuccess: (_result, variables) => {
+      toast.success(
+        variables.showInHomeMarquee
+          ? 'Added to homepage marquee'
+          : 'Removed from homepage marquee',
+      );
+      invalidate();
+    },
+    onError: (error) => toast.error(error.message || 'Failed to update homepage marquee'),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (imageId) => deleteAdminProductImage(productId, imageId),
     onSuccess: () => {
@@ -162,6 +179,7 @@ export default function ProductImagesManager({ productId, images = [], productSl
   const previewUrl = imageUrl.trim();
   const canPreview = previewUrl && isCloudinaryUrl(previewUrl);
   const bulkUrlCount = parseCloudinaryUrls(bulkUrls).length;
+  const marqueeSelectedCount = images.filter((image) => image.showInHomeMarquee).length;
   const isBusy =
     folderImportMutation.isPending ||
     linkMutation.isPending ||
@@ -173,10 +191,20 @@ export default function ProductImagesManager({ productId, images = [], productSl
       <div>
         <h3 className="font-heading text-xl tracking-wide text-brand-black">PRODUCT PHOTOS</h3>
         <p className="mt-1 text-sm text-text-muted">
-          Easiest: import every image already sitting in one Cloudinary folder. Collection share
-          links do not work here — use the folder path instead.
+          Easiest: import every image already sitting in one Cloudinary folder. Pick up to{' '}
+          {HOMEPAGE_MARQUEE_IMAGE_LIMIT} photos for the homepage marquee below.
         </p>
       </div>
+
+      {images.length > 0 && (
+        <div className="rounded-card border border-brand-red/20 bg-brand-red/5 px-4 py-3 text-sm text-brand-black">
+          <p className="font-semibold">Homepage marquee: {marqueeSelectedCount}/{HOMEPAGE_MARQUEE_IMAGE_LIMIT}</p>
+          <p className="mt-1 text-text-muted">
+            Top row scrolls left, bottom row scrolls right. If none are selected, the first{' '}
+            {HOMEPAGE_MARQUEE_IMAGE_LIMIT} photos are used automatically.
+          </p>
+        </div>
+      )}
 
       {images.length > 0 && (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -190,15 +218,20 @@ export default function ProductImagesManager({ productId, images = [], productSl
                 alt={image.altText || 'Product image'}
                 className="aspect-square w-full object-cover"
               />
-              <div className="flex items-center justify-between gap-2 p-3">
-                <div>
+              <div className="space-y-2 p-3">
+                <div className="flex flex-wrap items-center gap-2">
                   {image.isPrimary && (
                     <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase text-brand-red">
                       <Star className="h-3 w-3 fill-current" /> Main photo
                     </span>
                   )}
+                  {image.showInHomeMarquee && (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase text-brand-black">
+                      <Rows3 className="h-3 w-3" /> Homepage marquee
+                    </span>
+                  )}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {!image.isPrimary && (
                     <button
                       type="button"
@@ -210,10 +243,26 @@ export default function ProductImagesManager({ productId, images = [], productSl
                   )}
                   <button
                     type="button"
+                    onClick={() =>
+                      marqueeMutation.mutate({
+                        imageId: image.id,
+                        showInHomeMarquee: !image.showInHomeMarquee,
+                      })
+                    }
+                    disabled={
+                      !image.showInHomeMarquee &&
+                      marqueeSelectedCount >= HOMEPAGE_MARQUEE_IMAGE_LIMIT
+                    }
+                    className="text-xs font-semibold text-brand-black hover:text-brand-red disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {image.showInHomeMarquee ? 'Remove from marquee' : 'Add to marquee'}
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => {
                       if (window.confirm('Remove this image?')) deleteMutation.mutate(image.id);
                     }}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-button hover:bg-white"
+                    className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-button hover:bg-white"
                     aria-label="Remove image"
                   >
                     <Trash2 className="h-4 w-4 text-brand-red" />

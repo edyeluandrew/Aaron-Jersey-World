@@ -1,3 +1,5 @@
+export const HOMEPAGE_MARQUEE_IMAGE_LIMIT = 7;
+
 export const MAIN_CATEGORIES = [
   {
     name: 'Jerseys',

@@ -37,8 +37,8 @@ export default function SupplyShowcaseSection() {
         <ShowcaseSkeleton />
       ) : (
         <div className="space-y-8">
-          {products.map((product, index) => (
-            <SupplyShowcaseCard key={product.slug} product={product} index={index} />
+          {products.map((product) => (
+            <SupplyShowcaseCard key={product.slug} product={product} />
           ))}
         </div>
       )}
