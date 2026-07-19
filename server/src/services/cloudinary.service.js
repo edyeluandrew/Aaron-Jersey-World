@@ -101,6 +101,41 @@ function normalizeFolderCandidates(folderPrefix) {
   return [...candidates];
 }
 
+function mapCloudinaryError(error, fallbackMessage) {
+  const message = error?.error?.message || error.message || fallbackMessage;
+
+  if (/api_secret|invalid api key|unknown api key|cloud name/i.test(message)) {
+    return new AppError(
+      'Cloudinary credentials on the server are wrong. In Render, set CLOUDINARY_CLOUD_NAME to dvn7pcklz and copy a fresh API key + secret from the Cloudinary dashboard.',
+      503,
+    );
+  }
+
+  const statusCode = error?.error?.http_code;
+  if (statusCode === 404) {
+    return null;
+  }
+
+  return new AppError(message, statusCode && statusCode >= 500 ? 502 : 400);
+}
+
+export async function verifyCloudinaryCredentials() {
+  if (!isCloudinaryConfigured()) {
+    return { configured: false, valid: false, message: 'Cloudinary env vars are missing' };
+  }
+
+  try {
+    await cloudinary.api.ping();
+    return { configured: true, valid: true };
+  } catch (error) {
+    return {
+      configured: true,
+      valid: false,
+      message: error?.error?.message || error.message || 'Cloudinary ping failed',
+    };
+  }
+}
+
 async function listImagesByAssetFolder(folder) {
   const assets = [];
   let nextCursor;
@@ -114,13 +149,9 @@ async function listImagesByAssetFolder(folder) {
         ...(nextCursor ? { next_cursor: nextCursor } : {}),
       });
     } catch (error) {
-      if (error?.error?.http_code === 404) {
-        return [];
-      }
-      throw new AppError(
-        error?.error?.message || error.message || 'Failed to read Cloudinary folder',
-        error?.error?.http_code || 502,
-      );
+      const mapped = mapCloudinaryError(error, 'Failed to read Cloudinary folder');
+      if (mapped) throw mapped;
+      return [];
     }
 
     for (const resource of response.resources || []) {
@@ -150,10 +181,9 @@ async function listImagesBySearch(folder) {
       if (nextCursor) query = query.next_cursor(nextCursor);
       response = await query.execute();
     } catch (error) {
-      throw new AppError(
-        error?.error?.message || error.message || 'Failed to search Cloudinary folder',
-        error?.error?.http_code || 502,
-      );
+      const mapped = mapCloudinaryError(error, 'Failed to search Cloudinary folder');
+      if (mapped) throw mapped;
+      return [];
     }
 
     for (const resource of response.resources || []) {

@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useQueries } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/constants/navigation';
 import {
   fetchCategories,
@@ -10,6 +10,7 @@ import {
   fetchPublicSiteSettings,
   fetchRelatedProducts,
 } from '@/services/catalogue';
+import { MAIN_CATEGORY_SLUGS, getMainCategoryMeta } from '@/constants/catalogue';
 
 export function useSiteSettings() {
   return useQuery({
@@ -81,4 +82,35 @@ export function useProductFilters() {
     queryKey: QUERY_KEYS.productFilters,
     queryFn: fetchProductFilters,
   });
+}
+
+export function useSupplyShowcase() {
+  const queries = useQueries({
+    queries: MAIN_CATEGORY_SLUGS.map((slug) => ({
+      queryKey: QUERY_KEYS.product(slug),
+      queryFn: () => fetchProduct(slug),
+      staleTime: 1000 * 60 * 5,
+    })),
+  });
+
+  const products = queries
+    .map((query, index) => {
+      if (query.data) return query.data;
+
+      return {
+        slug: MAIN_CATEGORY_SLUGS[index],
+        name: getMainCategoryMeta(MAIN_CATEGORY_SLUGS[index])?.name,
+        shortDescription: getMainCategoryMeta(MAIN_CATEGORY_SLUGS[index])?.description,
+        images: [],
+      };
+    })
+    .sort(
+      (a, b) => MAIN_CATEGORY_SLUGS.indexOf(a.slug) - MAIN_CATEGORY_SLUGS.indexOf(b.slug),
+    );
+
+  return {
+    products,
+    isLoading: queries.some((query) => query.isLoading),
+    isError: queries.some((query) => query.isError),
+  };
 }
