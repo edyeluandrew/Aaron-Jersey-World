@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
-import { MAIN_CATEGORIES, productsPath } from '@/constants/catalogue';
+import { MAIN_CATEGORIES, catalogueItemPath, productsPath } from '@/constants/catalogue';
 
 export default function ProductTypeTabs({ className = '' }) {
   const [searchParams] = useSearchParams();
@@ -17,7 +17,7 @@ export default function ProductTypeTabs({ className = '' }) {
         return (
           <Link
             key={tab.slug || 'all'}
-            to={productsPath(tab.slug)}
+            to={tab.slug ? catalogueItemPath(tab.slug) : productsPath()}
             className={`shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
               isActive
                 ? 'bg-brand-red text-white shadow-card'

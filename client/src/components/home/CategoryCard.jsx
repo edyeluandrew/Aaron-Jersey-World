@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
-import { productsPath } from '@/constants/catalogue';
+import { catalogueItemPath } from '@/constants/catalogue';
 
 export default function CategoryCard({ category }) {
   const imageUrl = category.imageUrls?.original || category.imageUrl || category.imageUrls?.card;
 
   return (
     <Link
-      to={productsPath(category.slug)}
+      to={catalogueItemPath(category.slug)}
       className="group relative overflow-hidden rounded-card bg-brand-black shadow-card"
     >
       <div className="aspect-[4/3] overflow-hidden">

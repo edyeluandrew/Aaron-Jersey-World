@@ -70,6 +70,10 @@ export function productsPath(categorySlug = '') {
   return categorySlug ? `/products?category=${categorySlug}` : '/products';
 }
 
+export function catalogueItemPath(categorySlug) {
+  return `/products/${categorySlug}`;
+}
+
 export function getMainCategoryMeta(slug) {
   return MAIN_CATEGORIES.find((category) => category.slug === slug) || null;
 }
