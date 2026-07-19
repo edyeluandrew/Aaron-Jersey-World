@@ -4,7 +4,7 @@ import { ImagePlus, Star, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import Button from '@/components/common/Button';
 import { FormField } from '@/components/forms/FormField';
-import { inputClassName } from '@/constants/forms';
+import { inputClassName, textareaClassName } from '@/constants/forms';
 import { ADMIN_QUERY_KEYS } from '@/constants/adminNavigation';
 import { QUERY_KEYS } from '@/constants/navigation';
 import {
@@ -15,10 +15,20 @@ import {
 } from '@/services/adminProducts';
 import { extractCloudinaryPublicId, isCloudinaryUrl } from '@/utils/cloudinary';
 
+function parseCloudinaryUrls(text) {
+  return [...new Set(
+    text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line && isCloudinaryUrl(line)),
+  )];
+}
+
 export default function ProductImagesManager({ productId, images = [] }) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
   const [imageUrl, setImageUrl] = useState('');
+  const [bulkUrls, setBulkUrls] = useState('');
   const [altText, setAltText] = useState('');
 
   const invalidate = () => {
@@ -28,21 +38,28 @@ export default function ProductImagesManager({ productId, images = [] }) {
     queryClient.invalidateQueries({ queryKey: ['products'] });
   };
 
-  const linkMutation = useMutation({
-    mutationFn: () => {
-      const publicId = extractCloudinaryPublicId(imageUrl);
-      if (!publicId) {
-        throw new Error('Could not read the Cloudinary link. Check the Secure URL and try again.');
-      }
+  const addImageFromUrl = async (url, { sortOrder, isPrimary, label }) => {
+    const publicId = extractCloudinaryPublicId(url);
+    if (!publicId) {
+      throw new Error(`Could not read Cloudinary link: ${url}`);
+    }
 
-      return addAdminProductImage(productId, {
-        secureUrl: imageUrl.trim(),
-        publicId,
-        altText: altText.trim() || undefined,
-        isPrimary: images.length === 0,
+    return addAdminProductImage(productId, {
+      secureUrl: url,
+      publicId,
+      altText: label?.trim() || undefined,
+      isPrimary,
+      sortOrder,
+    });
+  };
+
+  const linkMutation = useMutation({
+    mutationFn: () =>
+      addImageFromUrl(imageUrl.trim(), {
         sortOrder: images.length,
-      });
-    },
+        isPrimary: images.length === 0,
+        label: altText,
+      }),
     onSuccess: () => {
       toast.success('Product image added');
       setImageUrl('');
@@ -52,15 +69,56 @@ export default function ProductImagesManager({ productId, images = [] }) {
     onError: (error) => toast.error(error.message || 'Failed to add image'),
   });
 
+  const bulkLinkMutation = useMutation({
+    mutationFn: async () => {
+      const urls = parseCloudinaryUrls(bulkUrls);
+      if (urls.length === 0) {
+        throw new Error('Paste at least one valid Cloudinary Secure URL (one per line).');
+      }
+
+      let added = 0;
+      let sortOrder = images.length;
+
+      for (const url of urls) {
+        await addImageFromUrl(url, {
+          sortOrder,
+          isPrimary: images.length === 0 && added === 0,
+        });
+        sortOrder += 1;
+        added += 1;
+      }
+
+      return added;
+    },
+    onSuccess: (count) => {
+      toast.success(`Added ${count} photo${count === 1 ? '' : 's'}`);
+      setBulkUrls('');
+      invalidate();
+    },
+    onError: (error) => toast.error(error.message || 'Failed to add images'),
+  });
+
   const uploadMutation = useMutation({
-    mutationFn: (file) =>
-      uploadAdminProductImage(productId, file, {
-        isPrimary: images.length === 0,
-        sortOrder: images.length,
-        altText: file.name,
-      }),
-    onSuccess: () => {
-      toast.success('Image uploaded');
+    mutationFn: async (files) => {
+      const list = Array.from(files);
+      let sortOrder = images.length;
+
+      for (let index = 0; index < list.length; index += 1) {
+        const file = list[index];
+        await uploadAdminProductImage(productId, file, {
+          isPrimary: images.length === 0 && index === 0,
+          sortOrder,
+          altText: file.name,
+        });
+        sortOrder += 1;
+      }
+
+      return list.length;
+    },
+    onSuccess: (count) => {
+      toast.success(
+        count === 1 ? 'Image uploaded' : `${count} images uploaded`,
+      );
       invalidate();
     },
     onError: (error) => toast.error(error.message || 'Failed to upload image'),
@@ -86,18 +144,24 @@ export default function ProductImagesManager({ productId, images = [] }) {
 
   const previewUrl = imageUrl.trim();
   const canPreview = previewUrl && isCloudinaryUrl(previewUrl);
+  const bulkUrlCount = parseCloudinaryUrls(bulkUrls).length;
+  const isBusy =
+    linkMutation.isPending ||
+    bulkLinkMutation.isPending ||
+    uploadMutation.isPending;
 
   return (
     <div className="space-y-5 rounded-card border border-border-light bg-white p-6 shadow-card">
       <div>
         <h3 className="font-heading text-xl tracking-wide text-brand-black">PRODUCT PHOTOS</h3>
         <p className="mt-1 text-sm text-text-muted">
-          Add photos already uploaded to Cloudinary, or upload a new file from your computer.
+          Add one photo, paste many Cloudinary links at once, or upload multiple files. All photos
+          appear in the customer gallery — set one as the main thumbnail.
         </p>
       </div>
 
       {images.length > 0 && (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {images.map((image) => (
             <li
               key={image.id}
@@ -144,12 +208,41 @@ export default function ProductImagesManager({ productId, images = [] }) {
       )}
 
       <div className="space-y-4 rounded-card border border-dashed border-border-light bg-surface-light/60 p-4">
-        <p className="text-sm font-semibold text-brand-black">Link a Cloudinary photo</p>
-        <ol className="list-decimal space-y-1 pl-5 text-sm text-text-muted">
-          <li>Open Cloudinary → Media Library → click your image</li>
-          <li>Copy the Secure URL</li>
-          <li>Paste below → Add photo</li>
-        </ol>
+        <p className="text-sm font-semibold text-brand-black">Add many Cloudinary links at once</p>
+        <p className="text-sm text-text-muted">
+          Paste one Secure URL per line — useful when you already uploaded a batch to Cloudinary.
+        </p>
+
+        <FormField label="Cloudinary Secure URLs" htmlFor="productBulkImageUrls">
+          <textarea
+            id="productBulkImageUrls"
+            rows={6}
+            value={bulkUrls}
+            onChange={(event) => setBulkUrls(event.target.value)}
+            className={textareaClassName}
+            placeholder={'https://res.cloudinary.com/dvn7pcklz/image/upload/...\nhttps://res.cloudinary.com/dvn7pcklz/image/upload/...'}
+          />
+        </FormField>
+
+        {bulkUrlCount > 0 && (
+          <p className="text-sm text-text-muted">
+            {bulkUrlCount} valid Cloudinary link{bulkUrlCount === 1 ? '' : 's'} ready to add
+          </p>
+        )}
+
+        <Button
+          type="button"
+          onClick={() => bulkLinkMutation.mutate()}
+          isLoading={bulkLinkMutation.isPending}
+          disabled={bulkUrlCount === 0 || isBusy}
+        >
+          <ImagePlus className="h-4 w-4" />
+          Add {bulkUrlCount > 0 ? bulkUrlCount : 'all'} photo{bulkUrlCount === 1 ? '' : 's'} from links
+        </Button>
+      </div>
+
+      <div className="space-y-4 rounded-card border border-dashed border-border-light bg-surface-light/60 p-4">
+        <p className="text-sm font-semibold text-brand-black">Add a single Cloudinary link</p>
 
         <FormField label="Cloudinary Secure URL" htmlFor="productImageUrl">
           <input
@@ -185,7 +278,7 @@ export default function ProductImagesManager({ productId, images = [] }) {
           type="button"
           onClick={() => linkMutation.mutate()}
           isLoading={linkMutation.isPending}
-          disabled={!canPreview}
+          disabled={!canPreview || isBusy}
         >
           <ImagePlus className="h-4 w-4" />
           Add photo from link
@@ -193,15 +286,17 @@ export default function ProductImagesManager({ productId, images = [] }) {
       </div>
 
       <div className="rounded-card border border-border-light bg-surface-light/60 p-4">
-        <p className="mb-3 text-sm font-semibold text-brand-black">Or upload from computer</p>
+        <p className="mb-1 text-sm font-semibold text-brand-black">Upload from computer</p>
+        <p className="mb-3 text-sm text-text-muted">Select multiple images at once if you need to.</p>
         <input
           ref={fileInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
+          multiple
           className="hidden"
           onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) uploadMutation.mutate(file);
+            const files = event.target.files;
+            if (files?.length) uploadMutation.mutate(files);
             event.target.value = '';
           }}
         />
@@ -210,9 +305,10 @@ export default function ProductImagesManager({ productId, images = [] }) {
           variant="secondary"
           onClick={() => fileInputRef.current?.click()}
           isLoading={uploadMutation.isPending}
+          disabled={isBusy}
         >
           <Upload className="h-4 w-4" />
-          Upload image file
+          Upload image file(s)
         </Button>
       </div>
     </div>
