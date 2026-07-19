@@ -41,6 +41,7 @@ export default function ProductImagesManager({ productId, images = [], productSl
     queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.featuredProducts });
     queryClient.invalidateQueries({ queryKey: ['products'] });
+    queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.dashboard });
     if (productSlug) {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.product(productSlug) });
     }
