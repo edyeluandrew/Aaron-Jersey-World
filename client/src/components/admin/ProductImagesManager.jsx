@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ImagePlus, Star, Trash2, Upload } from 'lucide-react';
+import { FolderOpen, ImagePlus, Star, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import Button from '@/components/common/Button';
 import { FormField } from '@/components/forms/FormField';
@@ -10,26 +10,34 @@ import { QUERY_KEYS } from '@/constants/navigation';
 import {
   addAdminProductImage,
   deleteAdminProductImage,
+  importAdminProductImagesFromFolder,
   updateAdminProductImage,
   uploadAdminProductImage,
 } from '@/services/adminProducts';
 import { extractCloudinaryPublicId, isCloudinaryUrl } from '@/utils/cloudinary';
 
 function parseCloudinaryUrls(text) {
-  return [...new Set(
-    text
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line && isCloudinaryUrl(line)),
-  )];
+  return [
+    ...new Set(
+      text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line && isCloudinaryUrl(line)),
+    ),
+  ];
 }
 
-export default function ProductImagesManager({ productId, images = [] }) {
+function defaultProductFolder(slug) {
+  return slug ? `aaron-jersey-world/products/${slug}` : 'aaron-jersey-world/products';
+}
+
+export default function ProductImagesManager({ productId, images = [], productSlug = '' }) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
   const [imageUrl, setImageUrl] = useState('');
   const [bulkUrls, setBulkUrls] = useState('');
   const [altText, setAltText] = useState('');
+  const [cloudinaryFolder, setCloudinaryFolder] = useState(defaultProductFolder(productSlug));
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.product(productId) });
@@ -52,6 +60,20 @@ export default function ProductImagesManager({ productId, images = [] }) {
       sortOrder,
     });
   };
+
+  const folderImportMutation = useMutation({
+    mutationFn: () =>
+      importAdminProductImagesFromFolder(productId, {
+        folder: cloudinaryFolder.trim(),
+      }),
+    onSuccess: (result) => {
+      toast.success(
+        `Imported ${result.added} photo${result.added === 1 ? '' : 's'} from Cloudinary folder`,
+      );
+      invalidate();
+    },
+    onError: (error) => toast.error(error.message || 'Failed to import folder'),
+  });
 
   const linkMutation = useMutation({
     mutationFn: () =>
@@ -116,9 +138,7 @@ export default function ProductImagesManager({ productId, images = [] }) {
       return list.length;
     },
     onSuccess: (count) => {
-      toast.success(
-        count === 1 ? 'Image uploaded' : `${count} images uploaded`,
-      );
+      toast.success(count === 1 ? 'Image uploaded' : `${count} images uploaded`);
       invalidate();
     },
     onError: (error) => toast.error(error.message || 'Failed to upload image'),
@@ -146,6 +166,7 @@ export default function ProductImagesManager({ productId, images = [] }) {
   const canPreview = previewUrl && isCloudinaryUrl(previewUrl);
   const bulkUrlCount = parseCloudinaryUrls(bulkUrls).length;
   const isBusy =
+    folderImportMutation.isPending ||
     linkMutation.isPending ||
     bulkLinkMutation.isPending ||
     uploadMutation.isPending;
@@ -155,8 +176,8 @@ export default function ProductImagesManager({ productId, images = [] }) {
       <div>
         <h3 className="font-heading text-xl tracking-wide text-brand-black">PRODUCT PHOTOS</h3>
         <p className="mt-1 text-sm text-text-muted">
-          Add one photo, paste many Cloudinary links at once, or upload multiple files. All photos
-          appear in the customer gallery — set one as the main thumbnail.
+          Easiest: import every image already sitting in one Cloudinary folder. Collection share
+          links do not work here — use the folder path instead.
         </p>
       </div>
 
@@ -207,11 +228,38 @@ export default function ProductImagesManager({ productId, images = [] }) {
         </ul>
       )}
 
-      <div className="space-y-4 rounded-card border border-dashed border-border-light bg-surface-light/60 p-4">
-        <p className="text-sm font-semibold text-brand-black">Add many Cloudinary links at once</p>
+      <div className="space-y-4 rounded-card border-2 border-brand-red/20 bg-brand-red/5 p-4">
+        <p className="text-sm font-semibold text-brand-black">Best option — import whole folder</p>
         <p className="text-sm text-text-muted">
-          Paste one Secure URL per line — useful when you already uploaded a batch to Cloudinary.
+          If you already uploaded many photos into one Cloudinary folder, type that folder path below
+          and import them all in one click. No copy/paste per image.
         </p>
+
+        <FormField label="Cloudinary folder path" htmlFor="productCloudinaryFolder">
+          <input
+            id="productCloudinaryFolder"
+            type="text"
+            value={cloudinaryFolder}
+            onChange={(event) => setCloudinaryFolder(event.target.value)}
+            className={inputClassName}
+            placeholder="aaron-jersey-world/products/jerseys"
+          />
+        </FormField>
+
+        <Button
+          type="button"
+          onClick={() => folderImportMutation.mutate()}
+          isLoading={folderImportMutation.isPending}
+          disabled={!cloudinaryFolder.trim() || isBusy}
+        >
+          <FolderOpen className="h-4 w-4" />
+          Import all photos from this folder
+        </Button>
+      </div>
+
+      <div className="space-y-4 rounded-card border border-dashed border-border-light bg-surface-light/60 p-4">
+        <p className="text-sm font-semibold text-brand-black">Or paste many Secure URLs</p>
+        <p className="text-sm text-text-muted">One link per line. Must start with https://res.cloudinary.com/</p>
 
         <FormField label="Cloudinary Secure URLs" htmlFor="productBulkImageUrls">
           <textarea

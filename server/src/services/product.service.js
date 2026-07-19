@@ -3,7 +3,11 @@ import { AppError } from '../utils/apiResponse.js';
 import { buildPaginationMeta, getPagination } from '../utils/pagination.js';
 import { serializeProduct, serializeProducts } from '../utils/serialize.js';
 import { generateUniqueSlug } from '../utils/slug.js';
-import { deleteMultipleAssets, safeDeleteCloudinaryAsset } from './cloudinary.service.js';
+import {
+  deleteMultipleAssets,
+  listCloudinaryImagesInFolder,
+  safeDeleteCloudinaryAsset,
+} from './cloudinary.service.js';
 
 const productListInclude = {
   category: {
@@ -343,6 +347,54 @@ export async function addProductImage(productId, data) {
       ...data,
     },
   });
+}
+
+export async function importProductImagesFromFolder(productId, folder) {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: { images: true },
+  });
+
+  if (!product) throw new AppError('Product not found', 404);
+
+  const assets = await listCloudinaryImagesInFolder(folder);
+  if (assets.length === 0) {
+    throw new AppError(`No images found in Cloudinary folder "${folder}"`, 404);
+  }
+
+  const existingPublicIds = new Set(product.images.map((image) => image.publicId));
+  let sortOrder = product.images.length;
+  let added = 0;
+  let skipped = 0;
+
+  for (const asset of assets) {
+    if (existingPublicIds.has(asset.publicId)) {
+      skipped += 1;
+      continue;
+    }
+
+    await prisma.productImage.create({
+      data: {
+        productId,
+        secureUrl: asset.secureUrl,
+        publicId: asset.publicId,
+        width: asset.width,
+        height: asset.height,
+        isPrimary: product.images.length === 0 && added === 0,
+        sortOrder,
+      },
+    });
+
+    sortOrder += 1;
+    added += 1;
+  }
+
+  return {
+    folder,
+    found: assets.length,
+    added,
+    skipped,
+  };
 }
 
 export async function updateProductImage(productId, imageId, data) {

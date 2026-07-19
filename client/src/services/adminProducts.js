@@ -25,6 +25,11 @@ export async function deleteAdminProduct(id) {
   return data;
 }
 
+export async function importAdminProductImagesFromFolder(productId, payload) {
+  const { data } = await apiClient.post(`/admin/products/${productId}/images/import-folder`, payload);
+  return data.data;
+}
+
 export async function addAdminProductImage(productId, payload) {
   const { data } = await apiClient.post(`/admin/products/${productId}/images`, payload);
   return data.data;

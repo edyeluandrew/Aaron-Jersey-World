@@ -241,7 +241,11 @@ export default function ProductFormPage() {
 
         {isEdit ? (
           <>
-            <ProductImagesManager productId={id} images={product?.images || []} />
+            <ProductImagesManager
+              productId={id}
+              productSlug={product?.slug}
+              images={product?.images || []}
+            />
             <ProductVariantsManager productId={id} variants={product?.variants || []} />
           </>
         ) : (

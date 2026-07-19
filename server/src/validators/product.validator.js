@@ -101,6 +101,14 @@ export const productVariantParamsSchema = z.object({
   variantId: z.string().min(1),
 });
 
+export const importProductFolderSchema = z.object({
+  folder: z
+    .string()
+    .min(1, 'Cloudinary folder path is required')
+    .max(200)
+    .transform((value) => value.replace(/^\/+|\/+$/g, '')),
+});
+
 export const featuredQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(24).optional(),
 });

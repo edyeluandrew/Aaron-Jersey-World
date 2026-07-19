@@ -83,3 +83,38 @@ export async function deleteMultipleAssets(assets = []) {
       .map((asset) => safeDeleteCloudinaryAsset(asset.publicId, asset.mimeType || 'image/jpeg')),
   );
 }
+
+export async function listCloudinaryImagesInFolder(folderPrefix) {
+  assertCloudinaryConfigured();
+
+  const prefix = folderPrefix.replace(/^\/+|\/+$/g, '');
+  if (!prefix) {
+    throw new AppError('Cloudinary folder path is required', 400);
+  }
+
+  const assets = [];
+  let nextCursor;
+
+  do {
+    const response = await cloudinary.api.resources({
+      type: 'upload',
+      resource_type: 'image',
+      prefix,
+      max_results: 500,
+      ...(nextCursor ? { next_cursor: nextCursor } : {}),
+    });
+
+    for (const resource of response.resources || []) {
+      assets.push({
+        secureUrl: resource.secure_url,
+        publicId: resource.public_id,
+        width: resource.width ?? null,
+        height: resource.height ?? null,
+      });
+    }
+
+    nextCursor = response.next_cursor;
+  } while (nextCursor);
+
+  return assets.sort((a, b) => a.publicId.localeCompare(b.publicId));
+}

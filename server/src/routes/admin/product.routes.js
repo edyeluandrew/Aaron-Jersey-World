@@ -7,6 +7,7 @@ import {
   deleteProductImage,
   deleteProductVariant,
   getAdminProductById,
+  importProductImagesFromFolder,
   listAdminProducts,
   updateProduct,
   updateProductImage,
@@ -17,6 +18,7 @@ import {
   createProductImageSchema,
   createProductSchema,
   createProductVariantSchema,
+  importProductFolderSchema,
   productIdSchema,
   productImageParamsSchema,
   productQuerySchema,
@@ -34,6 +36,12 @@ router.get('/:id', validate(productIdSchema, 'params'), getAdminProductById);
 router.patch('/:id', validate(productIdSchema, 'params'), validate(updateProductSchema), updateProduct);
 router.delete('/:id', validate(productIdSchema, 'params'), deleteProduct);
 
+router.post(
+  '/:id/images/import-folder',
+  validate(productIdSchema, 'params'),
+  validate(importProductFolderSchema),
+  importProductImagesFromFolder,
+);
 router.post(
   '/:id/images',
   validate(productIdSchema, 'params'),

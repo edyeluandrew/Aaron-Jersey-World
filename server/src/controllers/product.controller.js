@@ -153,6 +153,23 @@ export async function addProductImage(req, res, next) {
   }
 }
 
+export async function importProductImagesFromFolder(req, res, next) {
+  try {
+    const result = await productService.importProductImagesFromFolder(
+      getParams(req).id,
+      req.body.folder,
+    );
+
+    sendSuccess(res, {
+      message: `Imported ${result.added} image${result.added === 1 ? '' : 's'} from Cloudinary folder`,
+      data: result,
+      statusCode: 201,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function updateProductImage(req, res, next) {
   try {
     const image = await productService.updateProductImage(
