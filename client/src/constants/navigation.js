@@ -9,10 +9,10 @@ export const NAV_LINKS = [
 ];
 
 export const FOOTER_PRODUCT_LINKS = [
-  { label: 'Jerseys', to: '/categories/jerseys' },
-  { label: 'Training Equipment', to: '/categories/training-equipment' },
-  { label: 'Custom Kits', to: '/categories/custom-kits' },
-  { label: 'Trophies & Medals', to: '/categories/trophies-and-medals' },
+  { label: 'Jerseys', to: '/products?category=jerseys' },
+  { label: 'Training Equipment', to: '/products?category=training-equipment' },
+  { label: 'Custom Kits', to: '/products?category=custom-kits' },
+  { label: 'Trophies & Medals', to: '/products?category=trophies-and-medals' },
 ];
 
 export const FOOTER_SERVICE_LINKS = [

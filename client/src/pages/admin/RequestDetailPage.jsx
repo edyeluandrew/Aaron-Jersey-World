@@ -12,6 +12,7 @@ import { ADMIN_QUERY_KEYS, REQUEST_TYPES } from '@/constants/adminNavigation';
 import { fetchAdminRequest, updateAdminRequestStatus } from '@/services/adminRequests';
 import { formatAdminDate, formatLabel } from '@/utils/admin';
 import { formatSizeQuantitiesSummary } from '@/utils/product';
+import { productsPath } from '@/constants/catalogue';
 
 const TYPE_MAP = {
   inquiries: 'inquiries',
@@ -125,7 +126,7 @@ export default function RequestDetailPage() {
 
           {data.category && (
             <DetailField label="Category">
-              <Link to={`/categories/${data.category.slug}`} className="font-semibold text-brand-red hover:underline">
+              <Link to={productsPath(data.category.slug)} className="font-semibold text-brand-red hover:underline">
                 {data.category.name}
               </Link>
             </DetailField>

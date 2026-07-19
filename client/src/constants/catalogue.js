@@ -65,3 +65,11 @@ export function filterMainCategories(categories = []) {
         MAIN_CATEGORY_SLUGS.indexOf(a.slug) - MAIN_CATEGORY_SLUGS.indexOf(b.slug),
     );
 }
+
+export function productsPath(categorySlug = '') {
+  return categorySlug ? `/products?category=${categorySlug}` : '/products';
+}
+
+export function getMainCategoryMeta(slug) {
+  return MAIN_CATEGORIES.find((category) => category.slug === slug) || null;
+}

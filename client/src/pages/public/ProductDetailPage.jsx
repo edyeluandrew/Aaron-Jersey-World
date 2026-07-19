@@ -13,6 +13,7 @@ import ProductGallery from '@/components/products/ProductGallery';
 import ProductGrid from '@/components/products/ProductGrid';
 import { FormField } from '@/components/forms/FormField';
 import { useProduct, useRelatedProducts } from '@/hooks/useCatalogue';
+import { productsPath } from '@/constants/catalogue';
 import {
   buildProductWhatsAppMessage,
   buildQuoteSearchParams,
@@ -90,7 +91,7 @@ export default function ProductDetailPage() {
             { label: 'Home', to: '/' },
             { label: 'Products', to: '/products' },
             ...(product.category
-              ? [{ label: product.category.name, to: `/categories/${product.category.slug}` }]
+              ? [{ label: product.category.name, to: productsPath(product.category.slug) }]
               : []),
             { label: product.name },
           ]}
@@ -102,7 +103,7 @@ export default function ProductDetailPage() {
           <div>
             {product.category && (
               <Link
-                to={`/categories/${product.category.slug}`}
+                to={productsPath(product.category.slug)}
                 className="mb-2 inline-block text-sm font-semibold uppercase tracking-wide text-brand-red hover:underline"
               >
                 {product.category.name}

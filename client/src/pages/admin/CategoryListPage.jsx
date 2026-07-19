@@ -5,6 +5,7 @@ import AdminTable from '@/components/admin/AdminTable';
 import Badge from '@/components/common/Badge';
 import { ADMIN_QUERY_KEYS } from '@/constants/adminNavigation';
 import { fetchAdminCategories } from '@/services/adminCategories';
+import { productsPath } from '@/constants/catalogue';
 
 export default function CategoryListPage() {
   const { data = [], isLoading, isError, refetch } = useQuery({
@@ -43,7 +44,7 @@ export default function CategoryListPage() {
           <Link to={`/admin/categories/${row.id}/edit`} className="text-sm font-semibold text-brand-red hover:underline">
             Edit
           </Link>
-          <Link to={`/categories/${row.slug}`} className="text-sm font-semibold text-text-muted hover:text-brand-black hover:underline">
+          <Link to={productsPath(row.slug)} className="text-sm font-semibold text-text-muted hover:text-brand-black hover:underline">
             View site
           </Link>
         </div>

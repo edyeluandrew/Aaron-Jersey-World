@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Search, SlidersHorizontal } from 'lucide-react';
-import { filterMainCategories } from '@/constants/catalogue';
+import { filterMainCategories, productsPath } from '@/constants/catalogue';
 import { STOCK_STATUSES } from '@/constants';
 
 const SORT_OPTIONS = [
@@ -64,7 +64,7 @@ export default function ProductFilters({
             onChange={(e) => {
               const slug = e.target.value;
               if (navigateToCategory && slug) {
-                navigate(`/categories/${slug}`);
+                navigate(productsPath(slug));
                 return;
               }
               onChange({ category: slug });

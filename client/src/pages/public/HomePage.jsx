@@ -37,9 +37,9 @@ export default function HomePage() {
       <section className="section-padding">
         <Container>
           <SectionHeading
-            eyebrow="Shop by category"
-            title="FEATURED CATEGORIES"
-            description="Browse jerseys, equipment, trophies, training gear and branded apparel."
+            eyebrow="Our range"
+            title="BROWSE BY TYPE"
+            description="Jerseys, training equipment, custom kits and trophies — tap to see every product with photos."
             className="mb-10"
           />
           {categoriesLoading ? (
@@ -64,7 +64,7 @@ export default function HomePage() {
             <SectionHeading
               eyebrow="Popular right now"
               title="FEATURED PRODUCTS"
-              description="Sample catalogue items from our development database. Confirm availability on enquiry."
+              description="A selection from our catalogue. Request a quote for pricing and availability."
             />
             <Link to="/products" className="font-semibold text-brand-red hover:underline">
               View all products

@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react';
-import Container from '@/components/common/Container';
 import Button from '@/components/common/Button';
 import ProductGrid from '@/components/products/ProductGrid';
 import { useInfiniteProducts } from '@/hooks/useCatalogue';
 
-export default function CategoryProductCatalogue({
+export default function InfiniteProductCatalogue({
   categorySlug,
   categoryName,
   productCount,
-  hero,
-  breadcrumbs,
   emptyTitle,
 }) {
   const loadMoreRef = useRef(null);
@@ -54,39 +51,33 @@ export default function CategoryProductCatalogue({
 
   return (
     <>
-      {hero}
-      <Container className="section-padding">
-        {breadcrumbs}
+      {!isLoading && products.length > 0 && (
+        <p className="mb-6 text-sm text-text-muted">
+          Showing {products.length} of {total} product{total === 1 ? '' : 's'}
+          {categoryName ? ` in ${categoryName}` : ''}
+        </p>
+      )}
 
-        <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          {!isLoading && (
-            <p className="text-sm text-text-muted">
-              Showing {products.length} of {total} product{total === 1 ? '' : 's'} with photos
-            </p>
-          )}
+      <ProductGrid
+        products={products}
+        isLoading={isLoading}
+        isError={isError}
+        onRetry={refetch}
+        emptyTitle={emptyTitle}
+        isFetchingMore={isFetchingNextPage}
+      />
+
+      {hasNextPage && (
+        <div ref={loadMoreRef} className="mt-10 flex justify-center">
+          <Button
+            variant="secondary"
+            onClick={() => fetchNextPage()}
+            isLoading={isFetchingNextPage}
+          >
+            Load more products
+          </Button>
         </div>
-
-        <ProductGrid
-          products={products}
-          isLoading={isLoading}
-          isError={isError}
-          onRetry={refetch}
-          emptyTitle={emptyTitle}
-          isFetchingMore={isFetchingNextPage}
-        />
-
-        {hasNextPage && (
-          <div ref={loadMoreRef} className="mt-10 flex justify-center">
-            <Button
-              variant="secondary"
-              onClick={() => fetchNextPage()}
-              isLoading={isFetchingNextPage}
-            >
-              Load more products
-            </Button>
-          </div>
-        )}
-      </Container>
+      )}
     </>
   );
 }
