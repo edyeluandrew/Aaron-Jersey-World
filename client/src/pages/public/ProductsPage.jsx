@@ -15,7 +15,7 @@ export default function ProductsPage() {
   const pageTitle = activeType ? activeType.name : 'Our Products';
   const pageDescription = activeType
     ? activeType.description
-    : 'Browse jerseys, training equipment, custom kits, trophies and medals. Tap a type to see every product with photos.';
+    : 'Browse our four main ranges — jerseys, training equipment, custom kits and trophies and medals.';
 
   return (
     <>
