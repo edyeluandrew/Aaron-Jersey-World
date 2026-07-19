@@ -359,41 +359,34 @@ export async function importProductImagesFromFolder(productId, folder) {
 
   const assets = await listCloudinaryImagesInFolder(folder);
   if (assets.length === 0) {
-    throw new AppError(`No images found in Cloudinary folder "${folder}"`, 404);
+    throw new AppError(
+      `No images found in Cloudinary folder "${folder}". Try: aaron-jersey-world/categories/Club Jerseys`,
+      404,
+    );
   }
 
   const existingPublicIds = new Set(product.images.map((image) => image.publicId));
-  let sortOrder = product.images.length;
-  let added = 0;
-  let skipped = 0;
+  const newAssets = assets.filter((asset) => !existingPublicIds.has(asset.publicId));
 
-  for (const asset of assets) {
-    if (existingPublicIds.has(asset.publicId)) {
-      skipped += 1;
-      continue;
-    }
-
-    await prisma.productImage.create({
-      data: {
+  if (newAssets.length > 0) {
+    await prisma.productImage.createMany({
+      data: newAssets.map((asset, index) => ({
         productId,
         secureUrl: asset.secureUrl,
         publicId: asset.publicId,
         width: asset.width,
         height: asset.height,
-        isPrimary: product.images.length === 0 && added === 0,
-        sortOrder,
-      },
+        isPrimary: product.images.length === 0 && index === 0,
+        sortOrder: product.images.length + index,
+      })),
     });
-
-    sortOrder += 1;
-    added += 1;
   }
 
   return {
     folder,
     found: assets.length,
-    added,
-    skipped,
+    added: newAssets.length,
+    skipped: assets.length - newAssets.length,
   };
 }
 

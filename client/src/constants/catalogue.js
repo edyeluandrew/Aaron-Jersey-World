@@ -74,6 +74,17 @@ export function catalogueItemPath(categorySlug) {
   return `/products/${categorySlug}`;
 }
 
+export const PRODUCT_CLOUDINARY_FOLDERS = {
+  jerseys: 'aaron-jersey-world/categories/Club Jerseys',
+  'training-equipment': 'aaron-jersey-world/categories/Training Equipment',
+  'custom-kits': 'aaron-jersey-world/products/custom-kits',
+  'trophies-and-medals': 'aaron-jersey-world/categories/Trophies and Medals',
+};
+
+export function defaultProductCloudinaryFolder(productSlug = '') {
+  return PRODUCT_CLOUDINARY_FOLDERS[productSlug] || `aaron-jersey-world/products/${productSlug}`;
+}
+
 export function getMainCategoryMeta(slug) {
   return MAIN_CATEGORIES.find((category) => category.slug === slug) || null;
 }

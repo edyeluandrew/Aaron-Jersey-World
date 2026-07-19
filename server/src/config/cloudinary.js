@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { AppError } from '../utils/apiResponse.js';
 import { env } from './env.js';
 
 export function isCloudinaryConfigured() {
@@ -20,6 +21,9 @@ export { cloudinary };
 
 export function assertCloudinaryConfigured() {
   if (!isCloudinaryConfigured()) {
-    throw new Error('Cloudinary is not configured. Add CLOUDINARY_* variables to .env');
+    throw new AppError(
+      'Cloudinary is not configured on the server. Add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET on Render.',
+      503,
+    );
   }
 }

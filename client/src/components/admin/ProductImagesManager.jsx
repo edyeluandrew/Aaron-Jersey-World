@@ -14,6 +14,7 @@ import {
   updateAdminProductImage,
   uploadAdminProductImage,
 } from '@/services/adminProducts';
+import { defaultProductCloudinaryFolder } from '@/constants/catalogue';
 import { extractCloudinaryPublicId, isCloudinaryUrl } from '@/utils/cloudinary';
 
 function parseCloudinaryUrls(text) {
@@ -27,17 +28,13 @@ function parseCloudinaryUrls(text) {
   ];
 }
 
-function defaultProductFolder(slug) {
-  return slug ? `aaron-jersey-world/products/${slug}` : 'aaron-jersey-world/products';
-}
-
 export default function ProductImagesManager({ productId, images = [], productSlug = '' }) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef(null);
   const [imageUrl, setImageUrl] = useState('');
   const [bulkUrls, setBulkUrls] = useState('');
   const [altText, setAltText] = useState('');
-  const [cloudinaryFolder, setCloudinaryFolder] = useState(defaultProductFolder(productSlug));
+  const [cloudinaryFolder, setCloudinaryFolder] = useState(defaultProductCloudinaryFolder(productSlug));
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ADMIN_QUERY_KEYS.product(productId) });
@@ -231,8 +228,9 @@ export default function ProductImagesManager({ productId, images = [], productSl
       <div className="space-y-4 rounded-card border-2 border-brand-red/20 bg-brand-red/5 p-4">
         <p className="text-sm font-semibold text-brand-black">Best option — import whole folder</p>
         <p className="text-sm text-text-muted">
-          If you already uploaded many photos into one Cloudinary folder, type that folder path below
-          and import them all in one click. No copy/paste per image.
+          Cloudinary uses folder paths like{' '}
+          <code className="rounded bg-white px-1">aaron-jersey-world/categories/Club Jerseys</code>.
+          Collection share links do not work here.
         </p>
 
         <FormField label="Cloudinary folder path" htmlFor="productCloudinaryFolder">
@@ -242,7 +240,7 @@ export default function ProductImagesManager({ productId, images = [], productSl
             value={cloudinaryFolder}
             onChange={(event) => setCloudinaryFolder(event.target.value)}
             className={inputClassName}
-            placeholder="aaron-jersey-world/products/jerseys"
+            placeholder="aaron-jersey-world/categories/Club Jerseys"
           />
         </FormField>
 

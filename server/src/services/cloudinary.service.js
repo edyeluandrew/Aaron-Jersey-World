@@ -84,14 +84,94 @@ export async function deleteMultipleAssets(assets = []) {
   );
 }
 
-export async function listCloudinaryImagesInFolder(folderPrefix) {
-  assertCloudinaryConfigured();
+function normalizeFolderCandidates(folderPrefix) {
+  const cleaned = folderPrefix.replace(/^\/+|\/+$/g, '');
+  const candidates = new Set();
 
-  const prefix = folderPrefix.replace(/^\/+|\/+$/g, '');
-  if (!prefix) {
-    throw new AppError('Cloudinary folder path is required', 400);
+  if (cleaned) candidates.add(cleaned);
+
+  if (cleaned && !cleaned.startsWith('aaron-jersey-world/')) {
+    candidates.add(`aaron-jersey-world/${cleaned}`);
+
+    if (!cleaned.startsWith('categories/')) {
+      candidates.add(`aaron-jersey-world/categories/${cleaned}`);
+    }
   }
 
+  return [...candidates];
+}
+
+async function listImagesByAssetFolder(folder) {
+  const assets = [];
+  let nextCursor;
+
+  do {
+    let response;
+
+    try {
+      response = await cloudinary.api.resources_by_asset_folder(folder, {
+        max_results: 500,
+        ...(nextCursor ? { next_cursor: nextCursor } : {}),
+      });
+    } catch (error) {
+      if (error?.error?.http_code === 404) {
+        return [];
+      }
+      throw new AppError(
+        error?.error?.message || error.message || 'Failed to read Cloudinary folder',
+        error?.error?.http_code || 502,
+      );
+    }
+
+    for (const resource of response.resources || []) {
+      assets.push({
+        secureUrl: resource.secure_url,
+        publicId: resource.public_id,
+        width: resource.width ?? null,
+        height: resource.height ?? null,
+      });
+    }
+
+    nextCursor = response.next_cursor;
+  } while (nextCursor);
+
+  return assets;
+}
+
+async function listImagesBySearch(folder) {
+  const assets = [];
+  let nextCursor;
+
+  do {
+    let response;
+
+    try {
+      let query = cloudinary.search.expression(`asset_folder="${folder}"`).max_results(500);
+      if (nextCursor) query = query.next_cursor(nextCursor);
+      response = await query.execute();
+    } catch (error) {
+      throw new AppError(
+        error?.error?.message || error.message || 'Failed to search Cloudinary folder',
+        error?.error?.http_code || 502,
+      );
+    }
+
+    for (const resource of response.resources || []) {
+      assets.push({
+        secureUrl: resource.secure_url,
+        publicId: resource.public_id,
+        width: resource.width ?? null,
+        height: resource.height ?? null,
+      });
+    }
+
+    nextCursor = response.next_cursor;
+  } while (nextCursor);
+
+  return assets;
+}
+
+async function listImagesByPublicIdPrefix(prefix) {
   const assets = [];
   let nextCursor;
 
@@ -116,5 +196,33 @@ export async function listCloudinaryImagesInFolder(folderPrefix) {
     nextCursor = response.next_cursor;
   } while (nextCursor);
 
-  return assets.sort((a, b) => a.publicId.localeCompare(b.publicId));
+  return assets;
+}
+
+export async function listCloudinaryImagesInFolder(folderPrefix) {
+  assertCloudinaryConfigured();
+
+  const candidates = normalizeFolderCandidates(folderPrefix);
+  if (candidates.length === 0) {
+    throw new AppError('Cloudinary folder path is required', 400);
+  }
+
+  for (const folder of candidates) {
+    const byAssetFolder = await listImagesByAssetFolder(folder);
+    if (byAssetFolder.length > 0) {
+      return byAssetFolder.sort((a, b) => a.publicId.localeCompare(b.publicId));
+    }
+
+    const bySearch = await listImagesBySearch(folder);
+    if (bySearch.length > 0) {
+      return bySearch.sort((a, b) => a.publicId.localeCompare(b.publicId));
+    }
+
+    const byPrefix = await listImagesByPublicIdPrefix(folder);
+    if (byPrefix.length > 0) {
+      return byPrefix.sort((a, b) => a.publicId.localeCompare(b.publicId));
+    }
+  }
+
+  return [];
 }
