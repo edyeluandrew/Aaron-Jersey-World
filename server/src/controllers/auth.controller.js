@@ -56,7 +56,11 @@ export async function loginHandler(req, res, next) {
 
     sendSuccess(res, {
       message: 'Login successful',
-      data: { user: result.user },
+      data: {
+        user: result.user,
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      },
     });
   } catch (error) {
     next(error);
@@ -65,7 +69,7 @@ export async function loginHandler(req, res, next) {
 
 export async function refreshHandler(req, res, next) {
   try {
-    const refreshToken = req.cookies?.[COOKIE_NAMES.REFRESH_TOKEN];
+    const refreshToken = req.cookies?.[COOKIE_NAMES.REFRESH_TOKEN] || req.body?.refreshToken;
 
     const result = await refreshSession(refreshToken, getRequestMeta(req));
 
@@ -73,7 +77,11 @@ export async function refreshHandler(req, res, next) {
 
     sendSuccess(res, {
       message: 'Session refreshed',
-      data: { user: result.user },
+      data: {
+        user: result.user,
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      },
     });
   } catch (error) {
     clearAuthCookies(res);

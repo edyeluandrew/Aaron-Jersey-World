@@ -1,5 +1,11 @@
 import axios from 'axios';
 import { API_BASE_URL } from '@/constants';
+import {
+  clearAuthTokens,
+  getAccessToken,
+  getRefreshToken,
+  persistAuthTokens,
+} from '@/api/authToken';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -7,20 +13,36 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000,
+  timeout: 120000,
 });
 
 let refreshPromise = null;
 
 async function refreshAccessToken() {
   if (!refreshPromise) {
-    refreshPromise = apiClient.post('/auth/refresh').finally(() => {
-      refreshPromise = null;
-    });
+    const refreshToken = getRefreshToken();
+
+    refreshPromise = apiClient
+      .post('/auth/refresh', refreshToken ? { refreshToken } : {})
+      .then((response) => {
+        persistAuthTokens(response.data?.data ?? {});
+        return response;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
   }
 
   return refreshPromise;
 }
+
+apiClient.interceptors.request.use((config) => {
+  const token = getAccessToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 apiClient.interceptors.response.use(
   (response) => response,
@@ -39,6 +61,7 @@ apiClient.interceptors.response.use(
         await refreshAccessToken();
         return apiClient(originalRequest);
       } catch (refreshError) {
+        clearAuthTokens();
         return Promise.reject({
           message: refreshError.response?.data?.message || 'Session expired. Please log in again.',
           errors: refreshError.response?.data?.errors || null,

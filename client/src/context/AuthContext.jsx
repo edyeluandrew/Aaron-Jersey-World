@@ -1,5 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { fetchCurrentUser, login as loginRequest, logout as logoutRequest } from '@/services/auth';
+import {
+  fetchCurrentUser,
+  login as loginRequest,
+  logout as logoutRequest,
+  refreshSession,
+} from '@/services/auth';
+import { clearAuthTokens, getRefreshToken } from '@/api/authToken';
 
 const AuthContext = createContext(null);
 
@@ -10,16 +16,30 @@ export function AuthProvider({ children }) {
   const bootstrap = useCallback(async () => {
     try {
       const currentUser = await fetchCurrentUser();
+      if (currentUser) {
+        setUser(currentUser);
+        return;
+      }
+    } catch {
+      // Fall through to refresh when cookies are blocked cross-origin.
+    }
+
+    if (!getRefreshToken()) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      const currentUser = await refreshSession();
       setUser(currentUser);
     } catch {
+      clearAuthTokens();
       setUser(null);
-    } finally {
-      setIsBootstrapping(false);
     }
   }, []);
 
   useEffect(() => {
-    bootstrap();
+    bootstrap().finally(() => setIsBootstrapping(false));
   }, [bootstrap]);
 
   const login = useCallback(async (credentials) => {
